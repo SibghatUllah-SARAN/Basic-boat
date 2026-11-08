@@ -1,0 +1,2113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRAAN AI — Personal Intelligence System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #050911;
+      --panel-bg: rgba(7, 16, 31, 0.78);
+      --panel-border: rgba(0, 240, 255, 0.22);
+      --panel-glow: rgba(0, 240, 255, 0.08);
+      --cyan: #00f0ff;
+      --cyan-bright: #38f9d7;
+      --cyan-dim: rgba(0, 240, 255, 0.35);
+      --purple: #8b5cf6;
+      --purple-dim: rgba(139, 92, 246, 0.35);
+      --silver: #94a3b8;
+      --silver-light: #e2e8f0;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --font-display: 'Orbitron', monospace;
+      --font-body: 'Rajdhani', sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(0, 160, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+        linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      color: var(--silver-light);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(5, 12, 24, 0.6); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+    /* HUD Box Styling */
+    .hud-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      box-shadow: 0 4px 20px var(--panel-glow), inset 0 0 15px rgba(0, 240, 255, 0.03);
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hud-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 6px; height: 6px;
+      border-top: 1px solid var(--cyan);
+      border-left: 1px solid var(--cyan);
+    }
+    .hud-panel::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0; width: 6px; height: 6px;
+      border-bottom: 1px solid var(--cyan);
+      border-right: 1px solid var(--cyan);
+    }
+
+    /* TOP NAVBAR */
+    .topbar {
+      display: grid;
+      grid-template-columns: 280px 1fr 340px;
+      align-items: center;
+      padding: 10px 24px;
+      border-bottom: 1px solid var(--panel-border);
+      background: rgba(4, 9, 18, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px var(--cyan);
+      position: relative;
+    }
+
+    .brand-icon::after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      color: #fff;
+      text-shadow: 0 0 10px var(--cyan-dim);
+    }
+
+    .brand-sub {
+      font-size: 0.62rem;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      font-family: var(--font-display);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--cyan-dim);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-family: var(--font-display);
+      letter-spacing: 1.5px;
+      margin-left: 14px;
+      color: var(--cyan);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.75); }
+    }
+
+    /* CENTER CLOCK */
+    .time-center {
+      text-align: center;
+    }
+
+    .calendar-date {
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      color: var(--silver);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .digital-clock {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.45);
+    }
+
+    /* TOP RIGHT USER & SEARCH */
+    .top-right-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      padding: 5px 12px;
+      border-radius: 20px;
+      width: 170px;
+      gap: 8px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 0.75rem;
+      font-family: var(--font-body);
+      width: 100%;
+    }
+
+    .search-box input::placeholder { color: rgba(255,255,255,0.3); }
+
+    .tool-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--panel-border);
+      background: rgba(0, 240, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--silver);
+      transition: all 0.2s;
+    }
+    .tool-icon-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 10px var(--panel-glow);
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 12px;
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      background: rgba(139, 92, 246, 0.08);
+      cursor: pointer;
+    }
+
+    .user-pill .details {
+      text-align: right;
+      line-height: 1.1;
+    }
+    .user-pill .name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .user-pill .role {
+      font-size: 0.6rem;
+      color: var(--purple);
+      font-family: var(--font-display);
+    }
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #050911;
+    }
+
+    /* MAIN HUD GRID */
+    .command-workspace {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      flex: 1;
+      gap: 12px;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    /* LEFT SIDEBAR */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-panel {
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--silver);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .nav-item .left-grp {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(0, 240, 255, 0.08);
+      color: #fff;
+      border-left: 2px solid var(--cyan);
+      box-shadow: inset 4px 0 8px rgba(0, 240, 255, 0.1);
+    }
+
+    .nav-badge {
+      background: rgba(0, 240, 255, 0.2);
+      color: var(--cyan);
+      font-size: 0.65rem;
+      font-family: var(--font-code);
+      padding: 1px 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 240, 255, 0.4);
+    }
+
+    /* VOICE STATUS HUD PANEL */
+    .voice-status-panel {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .voice-title {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      color: var(--silver);
+      font-family: var(--font-display);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .audio-freq-bars {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      height: 28px;
+      width: 100%;
+    }
+
+    .freq-bar {
+      width: 3px;
+      border-radius: 2px;
+      background: var(--cyan);
+      animation: barOscillate 1.2s infinite ease-in-out;
+    }
+    .freq-bar:nth-child(2) { animation-delay: 0.15s; }
+    .freq-bar:nth-child(3) { animation-delay: 0.35s; }
+    .freq-bar:nth-child(4) { animation-delay: 0.5s; }
+    .freq-bar:nth-child(5) { animation-delay: 0.25s; }
+    .freq-bar:nth-child(6) { animation-delay: 0.4s; }
+    .freq-bar:nth-child(7) { animation-delay: 0.1s; }
+
+    @keyframes barOscillate {
+      0%, 100% { height: 6px; opacity: 0.4; }
+      50% { height: 26px; opacity: 1; }
+    }
+
+    .mic-button-glow {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: 2px solid var(--cyan);
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 0%, rgba(5, 12, 24, 0.9) 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .mic-button-glow:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+    }
+
+    .mic-button-glow svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: var(--cyan);
+      stroke-width: 2;
+    }
+
+    .focus-mode-btn {
+      width: 100%;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      padding: 6px;
+      border-radius: 6px;
+      color: var(--silver-light);
+      font-size: 0.72rem;
+      font-family: var(--font-display);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .focus-mode-btn:hover {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--cyan);
+    }
+
+    /* RIGHT WORKSPACE GRID */
+    .dashboard-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    /* ROW 1: CORE OVERVIEW & HOLOGRAPHIC SPHERE & LIVE INTEL */
+    .row-hero {
+      display: grid;
+      grid-template-columns: 230px 1fr 310px;
+      gap: 12px;
+      min-height: 220px;
+    }
+
+    /* AI Core Overview */
+    .panel-header-mini {
+      font-size: 0.68rem;
+      font-family: var(--font-display);
+      letter-spacing: 1.5px;
+      color: var(--silver);
+      padding: 10px 14px 6px;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .core-metrics-list {
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .metric-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+    }
+
+    .metric-icon-disc {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid var(--panel-border);
+      background: rgba(0, 240, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+    }
+
+    .metric-icon-disc svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .metric-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .metric-label {
+      font-size: 0.7rem;
+      color: var(--silver);
+      font-weight: 500;
+    }
+    .metric-val {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .text-cyan { color: var(--cyan) !important; }
+    .text-green { color: var(--green) !important; }
+    .text-purple { color: var(--purple) !important; }
+
+    /* Central Holographic Sphere */
+    .holo-center-panel {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(0, 240, 255, 0.08) 0%, rgba(4, 10, 20, 0.8) 75%);
+    }
+
+    #holoCanvas {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .holo-text-overlay {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .holo-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 6px;
+      color: #fff;
+      text-shadow: 0 0 16px var(--cyan), 0 0 32px var(--cyan);
+    }
+
+    .holo-subtitle {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      letter-spacing: 5px;
+      color: var(--cyan);
+      margin-top: 2px;
+    }
+
+    .holo-version {
+      font-family: var(--font-code);
+      font-size: 0.68rem;
+      color: var(--silver);
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    /* Live Intelligence Feed */
+    .intel-feed-list {
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .feed-item {
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: rgba(0, 240, 255, 0.03);
+      border-left: 2px solid var(--cyan);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: background 0.2s;
+    }
+
+    .feed-item:hover {
+      background: rgba(0, 240, 255, 0.08);
+    }
+
+    .feed-item.warning {
+      border-left-color: var(--amber);
+    }
+    .feed-item.purple-line {
+      border-left-color: var(--purple);
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .feed-tag {
+      font-size: 0.55rem;
+      font-family: var(--font-display);
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--cyan);
+    }
+
+    .feed-desc {
+      font-size: 0.68rem;
+      color: var(--silver);
+    }
+
+    .feed-footer-link {
+      padding: 6px 12px;
+      font-size: 0.7rem;
+      text-align: right;
+      color: var(--cyan);
+      cursor: pointer;
+      display: block;
+    }
+
+    /* ROW 2: ACTIVE DEPARTMENTS & MISSION TIMELINE & QUICK COMMANDS */
+    .row-middle {
+      display: grid;
+      grid-template-columns: 1fr 270px 240px;
+      gap: 12px;
+    }
+
+    /* 6 SRAAN Departments Cards */
+    .dept-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .agent-card {
+      background: rgba(0, 240, 255, 0.03);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .agent-card:hover, .agent-card.active-dept {
+      border-color: var(--cyan);
+      background: rgba(0, 240, 255, 0.09);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .agent-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .agent-card-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .agent-badge-status {
+      font-size: 0.55rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: var(--font-code);
+    }
+
+    .status-active {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--green);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .status-standby {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--silver);
+    }
+
+    .agent-waveform-svg {
+      width: 100%;
+      height: 22px;
+      stroke: var(--cyan);
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .agent-specialty {
+      font-size: 0.65rem;
+      color: var(--silver);
+      margin-top: 4px;
+      line-height: 1.2;
+    }
+
+    /* Mission Timeline */
+    .timeline-list {
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .timeline-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      border-bottom: 1px dashed rgba(255,255,255,0.06);
+      padding-bottom: 4px;
+    }
+
+    .time-slot {
+      font-family: var(--font-code);
+      font-size: 0.68rem;
+      color: var(--cyan);
+    }
+
+    .task-title {
+      font-weight: 600;
+      color: var(--silver-light);
+    }
+
+    .task-state {
+      font-size: 0.62rem;
+      color: var(--silver);
+      font-family: var(--font-code);
+    }
+
+    /* Quick Commands */
+    .commands-list {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .cmd-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cmd-btn:hover {
+      background: rgba(0, 240, 255, 0.16);
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    }
+
+    .cmd-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--cyan);
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* ROW 3: SYSTEM GAUGES & MEMORY INSIGHTS & LLM STATUS */
+    .row-bottom {
+      display: grid;
+      grid-template-columns: 280px 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Gauges */
+    .gauges-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 16px 10px;
+    }
+
+    .gauge-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .gauge-svg {
+      width: 72px;
+      height: 72px;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 6;
+    }
+
+    .gauge-progress {
+      fill: none;
+      stroke: var(--cyan);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 188;
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .gauge-text {
+      position: absolute;
+      top: 20px;
+      text-align: center;
+    }
+
+    .gauge-title {
+      font-size: 0.62rem;
+      font-family: var(--font-display);
+      color: var(--silver);
+    }
+
+    .gauge-val {
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: var(--font-code);
+      color: #fff;
+    }
+
+    /* Memory Insights Canvas */
+    .memory-insights-body {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      height: 110px;
+      padding: 6px 12px;
+      align-items: center;
+    }
+
+    #memoryCanvas {
+      width: 100%;
+      height: 100px;
+    }
+
+    .memory-stats-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .m-stat {
+      line-height: 1.1;
+    }
+    .m-stat-label {
+      font-size: 0.6rem;
+      color: var(--silver);
+    }
+    .m-stat-val {
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-family: var(--font-code);
+      color: var(--cyan);
+    }
+
+    /* LLM Matrix */
+    .llm-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      padding: 10px;
+    }
+
+    .llm-chip {
+      background: rgba(0, 240, 255, 0.03);
+      border: 1px solid var(--panel-border);
+      padding: 6px 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .llm-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .llm-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+    .llm-dot.offline {
+      background: var(--silver);
+      box-shadow: none;
+    }
+
+    .llm-status-text {
+      font-size: 0.58rem;
+      color: var(--cyan);
+      font-family: var(--font-code);
+    }
+
+    /* FOOTER STATUS BAR */
+    .footer-bar {
+      display: grid;
+      grid-template-columns: 320px 1fr 200px;
+      align-items: center;
+      padding: 8px 24px;
+      background: rgba(4, 9, 18, 0.9);
+      border-top: 1px solid var(--panel-border);
+      font-size: 0.72rem;
+    }
+
+    .footer-left {
+      display: flex;
+      gap: 16px;
+      color: var(--silver);
+    }
+
+    .footer-pill-talk {
+      justify-self: center;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--cyan);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+      border-radius: 30px;
+      padding: 6px 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .footer-pill-talk:hover {
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.45);
+      background: rgba(0, 240, 255, 0.16);
+    }
+
+    .talk-title {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .talk-sub {
+      font-size: 0.68rem;
+      color: var(--cyan);
+      font-family: var(--font-code);
+    }
+
+    .footer-right {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .briefing-btn {
+      background: transparent;
+      border: 1px solid var(--cyan-dim);
+      color: var(--silver-light);
+      padding: 5px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-family: var(--font-display);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .briefing-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    }
+
+    /* ============================================================
+       INTEGRATED SRAAN CHATBOT MODAL / DRAWER
+    ============================================================ */
+    .chatbot-drawer {
+      position: fixed;
+      right: -520px;
+      top: 0;
+      width: 500px;
+      height: 100vh;
+      background: rgba(5, 11, 22, 0.96);
+      border-left: 1px solid var(--cyan);
+      box-shadow: -10px 0 40px rgba(0, 240, 255, 0.25);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chatbot-drawer.open {
+      right: 0;
+    }
+
+    .chat-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 240, 255, 0.04);
+    }
+
+    .chat-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-close-btn {
+      background: transparent;
+      border: 1px solid var(--panel-border);
+      color: var(--silver);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .chat-close-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* Department Selector in Chat */
+    .chat-dept-selector {
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+      background: rgba(2, 6, 12, 0.8);
+    }
+
+    .chat-dept-pill {
+      font-size: 0.65rem;
+      font-family: var(--font-display);
+      padding: 4px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--panel-border);
+      background: rgba(0, 240, 255, 0.04);
+      color: var(--silver);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .chat-dept-pill.active {
+      border-color: var(--cyan);
+      color: #fff;
+      background: rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    /* Chat Messages Box */
+    .chat-messages {
+      flex: 1;
+      padding: 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      position: relative;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .bubble-assistant {
+      align-self: flex-start;
+      background: rgba(0, 240, 255, 0.07);
+      border: 1px solid var(--panel-border);
+      border-left: 3px solid var(--cyan);
+      color: var(--silver-light);
+    }
+
+    .bubble-assistant .bubble-dept-tag {
+      font-size: 0.58rem;
+      font-family: var(--font-display);
+      color: var(--cyan);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .bubble-user {
+      align-self: flex-end;
+      background: rgba(139, 92, 246, 0.16);
+      border: 1px solid var(--purple-dim);
+      border-right: 3px solid var(--purple);
+      color: #fff;
+    }
+
+    /* Chat Input */
+    .chat-input-area {
+      padding: 14px;
+      border-top: 1px solid var(--panel-border);
+      background: rgba(4, 8, 16, 0.95);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-controls-sub {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      color: var(--silver);
+    }
+
+    .chat-input-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chat-input-box textarea {
+      flex: 1;
+      background: rgba(0, 240, 255, 0.04);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 0.8rem;
+      font-family: var(--font-body);
+      resize: none;
+      outline: none;
+      height: 48px;
+    }
+
+    .chat-input-box textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px var(--panel-glow);
+    }
+
+    .chat-send-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid var(--cyan);
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--cyan);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .chat-send-btn:hover {
+      background: var(--cyan);
+      color: #050911;
+      box-shadow: 0 0 16px var(--cyan);
+    }
+
+    .chat-send-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .row-hero { grid-template-columns: 200px 1fr 260px; }
+      .row-middle { grid-template-columns: 1fr 1fr; }
+      .row-middle .commands-panel { grid-column: span 2; }
+      .row-bottom { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HUD BAR -->
+  <header class="topbar">
+    <div class="brand-section">
+      <div class="brand-icon"></div>
+      <div>
+        <div class="brand-name">SRAAN AI</div>
+        <div class="brand-sub">COMMAND CENTER</div>
+      </div>
+      <div class="status-badge">
+        <div class="pulse-dot"></div>
+        <span>SYSTEM OPTIMAL</span>
+      </div>
+    </div>
+
+    <!-- Center Clock and Date -->
+    <div class="time-center">
+      <div class="calendar-date" id="liveDate">MONDAY, 15 JUNE 2026</div>
+      <div class="digital-clock" id="liveTime">11:18:21 AM</div>
+    </div>
+
+    <!-- Top Right Controls -->
+    <div class="top-right-tools">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" placeholder="Search commands, tools...">
+      </div>
+      <button class="tool-icon-btn" title="Grid HUD"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></button>
+      <button class="tool-icon-btn" title="Alerts"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
+      <button class="tool-icon-btn" title="System Config"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+      
+      <div class="user-pill" onclick="openChatDrawer('SRAAN LIFE')">
+        <div class="details">
+          <div class="name">Operator</div>
+          <div class="role">Commander</div>
+        </div>
+        <div class="user-avatar">SR</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN HUD WORKSPACE -->
+  <main class="command-workspace">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div class="hud-panel nav-panel">
+        <a class="nav-item active" href="#">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Command Center</span>
+          </div>
+        </a>
+        <a class="nav-item" href="#" onclick="openChatDrawer('SRAAN ANALYTICS')">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>AI Core</span>
+          </div>
+        </a>
+        <a class="nav-item" href="#" onclick="openChatDrawer('SRAAN CODE')">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span>Agents</span>
+          </div>
+          <span class="nav-badge">6</span>
+        </a>
+        <a class="nav-item" href="#" onclick="openChatDrawer('SRAAN LIFE')">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            <span>Tasks</span>
+          </div>
+          <span class="nav-badge">3</span>
+        </a>
+        <a class="nav-item" href="#">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>Calendar</span>
+          </div>
+        </a>
+        <a class="nav-item" href="#">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            <span>Memory</span>
+          </div>
+        </a>
+        <a class="nav-item" href="#" onclick="openChatDrawer('SRAAN EDU')">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Conversations</span>
+          </div>
+          <span class="nav-badge">12</span>
+        </a>
+        <a class="nav-item" href="#" onclick="openChatDrawer('SRAAN RESEARCH')">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            <span>Knowledge Base</span>
+          </div>
+        </a>
+        <a class="nav-item" href="#" onclick="openChatDrawer('SRAAN BUSINESS')">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Tools &amp; Skills</span>
+          </div>
+          <span class="nav-badge">18</span>
+        </a>
+        <a class="nav-item" href="#">
+          <div class="left-grp">
+            <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <span>Workflows</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- VOICE STATUS PANEL -->
+      <div class="hud-panel voice-status-panel">
+        <div class="voice-title">
+          <span>VOICE STATUS</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+
+        <div class="audio-freq-bars">
+          <div class="freq-bar"></div>
+          <div class="freq-bar"></div>
+          <div class="freq-bar"></div>
+          <div class="freq-bar"></div>
+          <div class="freq-bar"></div>
+          <div class="freq-bar"></div>
+          <div class="freq-bar"></div>
+        </div>
+
+        <div style="font-size: 0.65rem; color: var(--silver); font-family: var(--font-code);">Listening...</div>
+
+        <div class="mic-button-glow" onclick="toggleVoiceInput()">
+          <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+        </div>
+        <div style="font-size: 0.68rem; font-weight: 600; color: #fff;">Tap to Speak</div>
+
+        <button class="focus-mode-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+          <span>Focus Mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- RIGHT DASHBOARD BODY -->
+    <div class="dashboard-grid">
+
+      <!-- ROW 1: AI CORE OVERVIEW + 3D ORB + INTEL FEED -->
+      <div class="row-hero">
+
+        <!-- AI Core Overview Box -->
+        <div class="hud-panel">
+          <div class="panel-header-mini">AI CORE OVERVIEW</div>
+          <div class="core-metrics-list">
+            <div class="metric-row">
+              <div class="metric-icon-disc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg></div>
+              <div class="metric-info">
+                <span class="metric-label">AI Core</span>
+                <span class="metric-val text-cyan">Active</span>
+              </div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-icon-disc"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path></svg></div>
+              <div class="metric-info">
+                <span class="metric-label">Memory</span>
+                <span class="metric-val">3,380 Stored</span>
+              </div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-icon-disc"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path></svg></div>
+              <div class="metric-info">
+                <span class="metric-label">Voice</span>
+                <span class="metric-val text-green">Online</span>
+              </div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-icon-disc"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg></div>
+              <div class="metric-info">
+                <span class="metric-label">Departments</span>
+                <span class="metric-val text-purple">6 Active</span>
+              </div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-icon-disc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle></svg></div>
+              <div class="metric-info">
+                <span class="metric-label">LLMs</span>
+                <span class="metric-val">4 Connected</span>
+              </div>
+            </div>
+            <div class="metric-row">
+              <div class="metric-icon-disc"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+              <div class="metric-info">
+                <span class="metric-label">System</span>
+                <span class="metric-val text-cyan">Optimal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Central Holographic Core (Canvas Orb Animation) -->
+        <div class="hud-panel holo-center-panel">
+          <canvas id="holoCanvas"></canvas>
+          <div class="holo-text-overlay">
+            <div class="holo-title">SRAAN</div>
+            <div class="holo-subtitle">AI CORE ECOSYSTEM</div>
+            <div class="holo-version">v1.0.0 • INTELLIGENCE BEYOND IMAGINATION</div>
+          </div>
+        </div>
+
+        <!-- Live Intelligence Feed -->
+        <div class="hud-panel">
+          <div class="panel-header-mini">
+            <span>LIVE INTELLIGENCE FEED</span>
+            <span class="pulse-dot"></span>
+          </div>
+          <div class="intel-feed-list">
+            <div class="feed-item">
+              <div class="feed-header">
+                <span>Design review with product team</span>
+                <span class="feed-tag">INFO</span>
+              </div>
+              <div class="feed-desc">Meeting scheduled for 02:00 PM</div>
+            </div>
+            <div class="feed-item warning">
+              <div class="feed-header">
+                <span>2 tasks overdue — SRAAN CODE</span>
+                <span class="feed-tag" style="color:var(--amber);">WARN</span>
+              </div>
+              <div class="feed-desc">Sandbox pipeline timeout flagged</div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-header">
+                <span>3 PRs awaiting SRAAN review</span>
+                <span class="feed-tag">TIP</span>
+              </div>
+              <div class="feed-desc">Automated unit test passes: 98%</div>
+            </div>
+            <div class="feed-item purple-line">
+              <div class="feed-header">
+                <span>Deep-work block is 2-4 PM</span>
+                <span class="feed-tag" style="color:var(--purple);">FOCUS</span>
+              </div>
+              <div class="feed-desc">All notifications auto-muted</div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-header">
+                <span>CPU usage at 15%</span>
+                <span class="feed-tag">LIVE</span>
+              </div>
+              <div class="feed-desc">System load nominal</div>
+            </div>
+          </div>
+          <span class="feed-footer-link" onclick="openChatDrawer('SRAAN LIFE')">View All Intelligence &gt;</span>
+        </div>
+
+      </div>
+
+      <!-- ROW 2: 6 DEPARTMENTS + TIMELINE + QUICK COMMANDS -->
+      <div class="row-middle">
+
+        <!-- SRAAN 6 Intelligence Departments Cards -->
+        <div class="hud-panel">
+          <div class="panel-header-mini">
+            <span>ACTIVE INTELLIGENCE DEPARTMENTS</span>
+            <span style="color:var(--cyan); cursor:pointer;" onclick="openChatDrawer('SRAAN EDU')">Open Terminal &gt;</span>
+          </div>
+          <div class="dept-cards-grid">
+            
+            <!-- 01 SRAAN EDU -->
+            <div class="agent-card active-dept" onclick="openChatDrawer('SRAAN EDU')">
+              <div class="agent-card-header">
+                <span class="agent-card-title">01 SRAAN EDU</span>
+                <span class="agent-badge-status status-active">Active</span>
+              </div>
+              <svg class="agent-waveform-svg" viewBox="0 0 100 20">
+                <path d="M0 10 Q15 0, 30 10 T60 10 T90 5 T100 10" />
+              </svg>
+              <div class="agent-specialty">Academic professor • Math &amp; University solver</div>
+            </div>
+
+            <!-- 02 SRAAN CODE -->
+            <div class="agent-card" onclick="openChatDrawer('SRAAN CODE')">
+              <div class="agent-card-header">
+                <span class="agent-card-title">02 SRAAN CODE</span>
+                <span class="agent-badge-status status-active">Active</span>
+              </div>
+              <svg class="agent-waveform-svg" viewBox="0 0 100 20">
+                <path d="M0 10 Q10 18, 25 10 T50 12 T75 2 T100 10" />
+              </svg>
+              <div class="agent-specialty">Coding partner • Python, C++, JS sandbox</div>
+            </div>
+
+            <!-- 03 SRAAN BUSINESS -->
+            <div class="agent-card" onclick="openChatDrawer('SRAAN BUSINESS')">
+              <div class="agent-card-header">
+                <span class="agent-card-title">03 SRAAN BIZ</span>
+                <span class="agent-badge-status status-standby">Standby</span>
+              </div>
+              <svg class="agent-waveform-svg" viewBox="0 0 100 20">
+                <path d="M0 10 Q20 12, 40 10 T80 8 T100 10" />
+              </svg>
+              <div class="agent-specialty">Business consultant • Strategy &amp; proposals</div>
+            </div>
+
+            <!-- 04 SRAAN RESEARCH -->
+            <div class="agent-card" onclick="openChatDrawer('SRAAN RESEARCH')">
+              <div class="agent-card-header">
+                <span class="agent-card-title">04 SRAAN RSCH</span>
+                <span class="agent-badge-status status-active">Active</span>
+              </div>
+              <svg class="agent-waveform-svg" viewBox="0 0 100 20">
+                <path d="M0 10 Q15 3, 35 10 T70 16 T100 10" />
+              </svg>
+              <div class="agent-specialty">Research analyst • Papers &amp; citations</div>
+            </div>
+
+            <!-- 05 SRAAN LIFE -->
+            <div class="agent-card" onclick="openChatDrawer('SRAAN LIFE')">
+              <div class="agent-card-header">
+                <span class="agent-card-title">05 SRAAN LIFE</span>
+                <span class="agent-badge-status status-standby">Standby</span>
+              </div>
+              <svg class="agent-waveform-svg" viewBox="0 0 100 20">
+                <path d="M0 10 Q25 15, 50 10 T85 5 T100 10" />
+              </svg>
+              <div class="agent-specialty">Productivity • Deadlines, goals &amp; tracking</div>
+            </div>
+
+            <!-- 06 SRAAN ANALYTICS -->
+            <div class="agent-card" onclick="openChatDrawer('SRAAN ANALYTICS')">
+              <div class="agent-card-header">
+                <span class="agent-card-title">06 SRAAN DATA</span>
+                <span class="agent-badge-status status-standby">Standby</span>
+              </div>
+              <svg class="agent-waveform-svg" viewBox="0 0 100 20">
+                <path d="M0 10 Q20 2, 45 10 T80 18 T100 10" />
+              </svg>
+              <div class="agent-specialty">Data analytics • CSV, interactive charts &amp; ML</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Mission Timeline -->
+        <div class="hud-panel">
+          <div class="panel-header-mini">
+            <span>MISSION TIMELINE</span>
+            <span style="font-size:0.6rem; color:var(--cyan);">Today &or;</span>
+          </div>
+          <div class="timeline-list">
+            <div class="timeline-item">
+              <span class="time-slot">09:30 AM</span>
+              <span class="task-title">Daily Standup</span>
+              <span class="task-state" style="color:var(--green);">Done</span>
+            </div>
+            <div class="timeline-item">
+              <span class="time-slot">12:00 PM</span>
+              <span class="task-title">Finalize HUD Spacing</span>
+              <span class="task-state">In 42 min</span>
+            </div>
+            <div class="timeline-item">
+              <span class="time-slot">02:00 PM</span>
+              <span class="task-title">Deep-work: Voice Pipeline</span>
+              <span class="task-state">In 2h 42m</span>
+            </div>
+            <div class="timeline-item">
+              <span class="time-slot">04:30 PM</span>
+              <span class="task-title">Design Review — Command Center V1</span>
+              <span class="task-state">In 5h 12m</span>
+            </div>
+          </div>
+          <span class="feed-footer-link" style="text-align: center;">View Full Schedule &gt;</span>
+        </div>
+
+        <!-- Quick Commands -->
+        <div class="hud-panel commands-panel">
+          <div class="panel-header-mini">QUICK COMMANDS</div>
+          <div class="commands-list">
+            <button class="cmd-btn" onclick="openChatDrawer('SRAAN LIFE')">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Start New Task</span>
+            </button>
+            <button class="cmd-btn" onclick="openChatDrawer('SRAAN LIFE')">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+              <span>Open Calendar</span>
+            </button>
+            <button class="cmd-btn" onclick="openChatDrawer('SRAAN EDU')">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span>Start Voice Chat</span>
+            </button>
+            <button class="cmd-btn" onclick="openChatDrawer('SRAAN CODE')">
+              <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Run Sandbox Workflow</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 3: SYSTEM MONITOR + MEMORY INSIGHTS + LLM STATUS -->
+      <div class="row-bottom">
+
+        <!-- Gauges: CPU / RAM / DISK -->
+        <div class="hud-panel">
+          <div class="panel-header-mini">SYSTEM MONITOR</div>
+          <div class="gauges-container">
+            <!-- CPU -->
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 70 70">
+                <circle class="gauge-bg" cx="35" cy="35" r="30"></circle>
+                <circle class="gauge-progress" id="cpuGauge" cx="35" cy="35" r="30" style="stroke-dashoffset: 160;"></circle>
+              </svg>
+              <div class="gauge-text">
+                <div class="gauge-title">CPU</div>
+                <div class="gauge-val" id="cpuVal">15%</div>
+              </div>
+            </div>
+
+            <!-- RAM -->
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 70 70">
+                <circle class="gauge-bg" cx="35" cy="35" r="30"></circle>
+                <circle class="gauge-progress" id="ramGauge" cx="35" cy="35" r="30" style="stroke-dashoffset: 86; stroke: var(--cyan-bright);"></circle>
+              </svg>
+              <div class="gauge-text">
+                <div class="gauge-title">RAM</div>
+                <div class="gauge-val" id="ramVal">54%</div>
+              </div>
+            </div>
+
+            <!-- DISK -->
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 70 70">
+                <circle class="gauge-bg" cx="35" cy="35" r="30"></circle>
+                <circle class="gauge-progress" id="diskGauge" cx="35" cy="35" r="30" style="stroke-dashoffset: 112; stroke: var(--purple);"></circle>
+              </svg>
+              <div class="gauge-text">
+                <div class="gauge-title">DISK</div>
+                <div class="gauge-val">40%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Memory Insights Network Canvas -->
+        <div class="hud-panel">
+          <div class="panel-header-mini">
+            <span>MEMORY INSIGHTS</span>
+            <span style="color:var(--cyan); cursor:pointer;">View Memory Map &gt;</span>
+          </div>
+          <div class="memory-insights-body">
+            <canvas id="memoryCanvas"></canvas>
+            <div class="memory-stats-col">
+              <div class="m-stat">
+                <div class="m-stat-label">Memories</div>
+                <div class="m-stat-val">3,380</div>
+              </div>
+              <div class="m-stat">
+                <div class="m-stat-label">Session Turns</div>
+                <div class="m-stat-val">22</div>
+              </div>
+              <div class="m-stat">
+                <div class="m-stat-label">Tool Calls</div>
+                <div class="m-stat-val">14</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LLM STATUS -->
+        <div class="hud-panel">
+          <div class="panel-header-mini">
+            <span>LLM ENGINE STATUS</span>
+            <span style="font-size:0.65rem; color:var(--cyan);">4 Connected</span>
+          </div>
+          <div class="llm-grid">
+            <div class="llm-chip">
+              <div class="llm-name">
+                <span class="llm-dot"></span>
+                <span>Claude 3.5</span>
+              </div>
+              <span class="llm-status-text">Connected</span>
+            </div>
+            <div class="llm-chip">
+              <div class="llm-name">
+                <span class="llm-dot"></span>
+                <span>OpenAI GPT-4o</span>
+              </div>
+              <span class="llm-status-text">Connected</span>
+            </div>
+            <div class="llm-chip">
+              <div class="llm-name">
+                <span class="llm-dot"></span>
+                <span>Groq Llama 3</span>
+              </div>
+              <span class="llm-status-text">Ultra-Fast</span>
+            </div>
+            <div class="llm-chip">
+              <div class="llm-name">
+                <span class="llm-dot"></span>
+                <span>Gemini 1.5 Pro</span>
+              </div>
+              <span class="llm-status-text">Connected</span>
+            </div>
+            <div class="llm-chip">
+              <div class="llm-name">
+                <span class="llm-dot offline"></span>
+                <span>Ollama Local</span>
+              </div>
+              <span class="llm-status-text" style="color:var(--silver);">Standby</span>
+            </div>
+            <div class="llm-chip">
+              <div class="llm-name">
+                <span class="llm-dot"></span>
+                <span>SRAAN Sandbox</span>
+              </div>
+              <span class="llm-status-text" style="color:var(--green);">Ready</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- BOTTOM STATUS BAR -->
+  <footer class="footer-bar">
+    <div class="footer-left">
+      <div>Location: <strong style="color:#fff;">Bhimber, Pakistan</strong></div>
+      <div>Weather: <strong style="color:var(--cyan);">28°C Overcast</strong></div>
+      <div>Network: <strong style="color:var(--green);">Excellent</strong></div>
+    </div>
+
+    <!-- Center Talk pill -->
+    <div class="footer-pill-talk" onclick="openChatDrawer('SRAAN EDU')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path></svg>
+      <div>
+        <div class="talk-title">TALK TO SRAAN</div>
+        <div class="talk-sub">I am listening... Click to initiate conversation</div>
+      </div>
+    </div>
+
+    <div class="footer-right">
+      <button class="briefing-btn" onclick="openChatDrawer('SRAAN RESEARCH')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <span>Executive Briefing</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       INTEGRATED SRAAN CHATBOT DRAWER (Supports all 6 departments)
+  ============================================================ -->
+  <div class="chatbot-drawer" id="chatDrawer">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="brand-icon" style="width:28px; height:28px;"></div>
+        <div>
+          <div style="font-family:var(--font-display); font-size:0.95rem; font-weight:800; color:#fff;" id="chatActiveDeptTitle">SRAAN EDU</div>
+          <div style="font-size:0.62rem; color:var(--cyan); font-family:var(--font-code);">INTELLIGENCE SYSTEM • v1.0.0</div>
+        </div>
+      </div>
+      <button class="chat-close-btn" onclick="closeChatDrawer()">✕</button>
+    </div>
+
+    <!-- Switch Department Tabs -->
+    <div class="chat-dept-selector">
+      <div class="chat-dept-pill active" onclick="switchChatDept('SRAAN EDU')">01 EDU</div>
+      <div class="chat-dept-pill" onclick="switchChatDept('SRAAN CODE')">02 CODE</div>
+      <div class="chat-dept-pill" onclick="switchChatDept('SRAAN BUSINESS')">03 BUSINESS</div>
+      <div class="chat-dept-pill" onclick="switchChatDept('SRAAN RESEARCH')">04 RESEARCH</div>
+      <div class="chat-dept-pill" onclick="switchChatDept('SRAAN LIFE')">05 LIFE</div>
+      <div class="chat-dept-pill" onclick="switchChatDept('SRAAN ANALYTICS')">06 DATA</div>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-bubble bubble-assistant">
+        <div class="bubble-dept-tag">01 • SRAAN EDU DEPT</div>
+        Welcome Commander. I am your academic professor agent. I can solve calculus problems, generate university exam papers, analyze textbook PDFs, and explain concepts in English, Urdu or Roman Urdu. How can I assist your study session?
+      </div>
+    </div>
+
+    <!-- Input Box -->
+    <div class="chat-input-area">
+      <div class="chat-controls-sub">
+        <span>Active Model: <strong style="color:var(--cyan);">SRAAN Multi-Agent Core</strong></span>
+        <span>Sandbox: <strong style="color:var(--green);">Ready</strong></span>
+      </div>
+      <div class="chat-input-box">
+        <textarea id="chatInput" placeholder="Ask SRAAN anything (EDU, Code, Business, Research, Life, Analytics)..." onkeydown="handleChatKey(event)"></textarea>
+        <button class="chat-send-btn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT: Hologram Canvas, Dynamic HUD Clock, Gauges & Multi-Agent Chatbot -->
+  <script>
+    // 1. LIVE TIME & DATE UPDATE
+    function updateClock() {
+      const now = new Date();
+      const optionsDate = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      document.getElementById('liveDate').innerText = now.toLocaleDateString('en-GB', optionsDate).toUpperCase();
+      
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      document.getElementById('liveTime').innerText = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. CENTRAL 3D WIREFRAME HOLOGRAPHIC SPHERE ANIMATION
+    const holoCanvas = document.getElementById('holoCanvas');
+    const ctx = holoCanvas.getContext('2d');
+    let width, height;
+
+    function resizeCanvas() {
+      width = holoCanvas.width = holoCanvas.offsetWidth;
+      height = holoCanvas.height = holoCanvas.offsetHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const dots = [];
+    const numDots = 140;
+    const sphereRadius = 85;
+
+    for (let i = 0; i < numDots; i++) {
+      const theta = Math.acos(2 * Math.random() - 1);
+      const phi = 2 * Math.PI * Math.random();
+      dots.push({
+        x: sphereRadius * Math.sin(theta) * Math.cos(phi),
+        y: sphereRadius * Math.sin(theta) * Math.sin(phi),
+        z: sphereRadius * Math.cos(theta)
+      });
+    }
+
+    let angleX = 0.003;
+    let angleY = 0.006;
+
+    function drawHoloSphere() {
+      ctx.clearRect(0, 0, width, height);
+
+      const cx = width / 2;
+      const cy = height / 2;
+
+      // Glow center circle
+      const gradient = ctx.createRadialGradient(cx, cy, 10, cx, cy, sphereRadius + 30);
+      gradient.addColorStop(0, 'rgba(0, 240, 255, 0.18)');
+      gradient.addColorStop(0.6, 'rgba(0, 240, 255, 0.04)');
+      gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(cx, cy, sphereRadius + 35, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Outer rings
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, sphereRadius + 20, (sphereRadius + 20) * 0.4, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.2)';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, sphereRadius + 35, (sphereRadius + 35) * 0.6, Math.PI / 4, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Rotate points
+      for (let i = 0; i < dots.length; i++) {
+        let p = dots[i];
+
+        // Rotate Y
+        let cosY = Math.cos(angleY), sinY = Math.sin(angleY);
+        let x1 = p.x * cosY - p.z * sinY;
+        let z1 = p.z * cosY + p.x * sinY;
+
+        // Rotate X
+        let cosX = Math.cos(angleX), sinX = Math.sin(angleX);
+        let y1 = p.y * cosX - z1 * sinX;
+        let z2 = z1 * cosX + p.y * sinX;
+
+        p.x = x1; p.y = y1; p.z = z2;
+
+        const fov = 260;
+        const scale = fov / (fov + p.z);
+        const projX = cx + p.x * scale;
+        const projY = cy + p.y * scale;
+        const alpha = Math.max(0.15, (p.z + sphereRadius) / (2 * sphereRadius));
+
+        ctx.fillStyle = i % 4 === 0 ? `rgba(139, 92, 246, ${alpha})` : `rgba(0, 240, 255, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(projX, projY, Math.max(1, 2 * scale), 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(drawHoloSphere);
+    }
+    drawHoloSphere();
+
+    // 3. MEMORY INSIGHTS CONSTELLATION GRAPH CANVAS
+    const memCanvas = document.getElementById('memoryCanvas');
+    const memCtx = memCanvas.getContext('2d');
+    function resizeMemCanvas() {
+      memCanvas.width = memCanvas.offsetWidth;
+      memCanvas.height = memCanvas.offsetHeight;
+    }
+    resizeMemCanvas();
+
+    const memNodes = [
+      {x: 20, y: 50}, {x: 60, y: 25}, {x: 100, y: 70}, 
+      {x: 140, y: 35}, {x: 190, y: 55}, {x: 230, y: 20}, {x: 270, y: 65}
+    ];
+
+    function drawMemoryGraph() {
+      memCtx.clearRect(0, 0, memCanvas.width, memCanvas.height);
+      memCtx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+      memCtx.lineWidth = 1.2;
+
+      memCtx.beginPath();
+      for (let i = 0; i < memNodes.length; i++) {
+        if (i === 0) memCtx.moveTo(memNodes[i].x, memNodes[i].y);
+        else memCtx.lineTo(memNodes[i].x, memNodes[i].y);
+      }
+      memCtx.stroke();
+
+      for (let i = 0; i < memNodes.length; i++) {
+        memCtx.fillStyle = '#00f0ff';
+        memCtx.shadowColor = '#00f0ff';
+        memCtx.shadowBlur = 8;
+        memCtx.beginPath();
+        memCtx.arc(memNodes[i].x, memNodes[i].y, 3, 0, Math.PI * 2);
+        memCtx.fill();
+        memCtx.shadowBlur = 0;
+      }
+    }
+    drawMemoryGraph();
+
+    // 4. RANDOM HUD GAUGES OSCILLATION (Simulating real-time data)
+    setInterval(() => {
+      const cpu = Math.floor(12 + Math.random() * 10);
+      const ram = Math.floor(52 + Math.random() * 6);
+      document.getElementById('cpuVal').innerText = cpu + '%';
+      document.getElementById('ramVal').innerText = ram + '%';
+      
+      const cpuOffset = 188 - (188 * cpu) / 100;
+      const ramOffset = 188 - (188 * ram) / 100;
+      document.getElementById('cpuGauge').style.strokeDashoffset = cpuOffset;
+      document.getElementById('ramGauge').style.strokeDashoffset = ramOffset;
+    }, 4000);
+
+    // 5. MULTI-AGENT SRAAN CHATBOT ENGINE
+    let currentDepartment = 'SRAAN EDU';
+
+    const departmentProfiles = {
+      'SRAAN EDU': {
+        title: '01 • SRAAN EDU (Academic Professor)',
+        intro: 'Academic Professor online. I specialize in university-level mathematics, engineering, exam generation, and step-by-step problem solving in English, Urdu, and Roman Urdu. What topic are we studying?',
+        sampleResponse: (q) => `[SRAAN EDU • Academic Solution]\nAnalyzing problem regarding "${q}":\n\n1. Theorem Definition: The foundational boundary conditions are verified.\n2. Step-by-Step Derivation: Applied differential analysis.\n3. Summary: If you are preparing for university exams, I can also generate 5 practice MCQs or an Urdu explanation instantly.`
+      },
+      'SRAAN CODE': {
+        title: '02 • SRAAN CODE (Programming Partner)',
+        intro: 'Programming Partner active. Sandbox environment initialized for Python, C++, JavaScript, and SQL. Ready for code generation, debugging, and ML project architecture.',
+        sampleResponse: (q) => `\`\`\`python\n# SRAAN CODE Execution Sandbox\ndef execute_task():\n    # Solution for: ${q}\n    status = "Optimized with O(log n) efficiency"\n    return {"status": status, "verified": True}\n\nprint(execute_task())\n\`\`\`\nUnit tests verified. Sandbox ready for deployment.`
+      },
+      'SRAAN BUSINESS': {
+        title: '03 • SRAAN BUSINESS (Consultant)',
+        intro: 'Business Consultant online. Ready to craft client proposals, evaluate market ROI, generate SEO recommendations, and scale your freelance strategies.',
+        sampleResponse: (q) => `[SRAAN BUSINESS • Strategic Brief]\nTarget Query: "${q}"\n\n• Market Positioning: Blue Ocean opportunity identified.\n• Proposed Action: Formulate high-converting client proposal with tiered pricing.\n• ROI Projection: Expected 3.4x return over 60-day campaign cycle.`
+      },
+      'SRAAN RESEARCH': {
+        title: '04 • SRAAN RESEARCH (Research Analyst)',
+        intro: 'Academic Research Analyst active. Specialized in literature reviews, methodology design, data cleaning, and APA/IEEE citation verification.',
+        sampleResponse: (q) => `[SRAAN RESEARCH • Literature Summary]\nResearch Focus: "${q}"\n\n• Key Finding: Recent peer-reviewed studies (2024-2026) show strong correlation with your hypothesis.\n• Methodology: Double-blind statistical evaluation recommended.\n• Citations: Synthesized 8 authoritative sources.`
+      },
+      'SRAAN LIFE': {
+        title: '05 • SRAAN LIFE (Productivity Assistant)',
+        intro: 'Personal Productivity Assistant ready. I will organize your deadlines, scholarship calendars, focus blocks, and personal knowledge graphs.',
+        sampleResponse: (q) => `[SRAAN LIFE • Schedule & Action Items]\nProcessed: "${q}"\n\n✓ Task registered in Mission Timeline.\n✓ High-priority focus block mapped from 2:00 PM - 4:00 PM.\n✓ Calendar notification set 15 minutes prior.`
+      },
+      'SRAAN ANALYTICS': {
+        title: '06 • SRAAN DATA (Data Analyst)',
+        intro: 'Intelligent Data Analyst online. Upload Excel/CSV files for automated statistical calculations, distribution curves, and interactive insights.',
+        sampleResponse: (q) => `[SRAAN ANALYTICS • Metric Report]\nDataset Parameter: "${q}"\n\n• Mean Variance: 1.42 (Within 95% Confidence Interval)\n• Predictive Trend: Upward trajectory +18.4% next quarter.\n• Interactive chart data generated in system memory.`
+      }
+    };
+
+    function openChatDrawer(dept) {
+      if (dept) switchChatDept(dept);
+      document.getElementById('chatDrawer').classList.add('open');
+      document.getElementById('chatInput').focus();
+    }
+
+    function closeChatDrawer() {
+      document.getElementById('chatDrawer').classList.remove('open');
+    }
+
+    function switchChatDept(dept) {
+      currentDepartment = dept;
+      document.getElementById('chatActiveDeptTitle').innerText = dept;
+
+      // Update active tab buttons
+      const pills = document.querySelectorAll('.chat-dept-pill');
+      pills.forEach(pill => {
+        if (pill.innerText.includes(dept.split(' ')[1])) pill.classList.add('active');
+        else pill.classList.remove('active');
+      });
+
+      // Update card highlighting in main HUD
+      const cards = document.querySelectorAll('.agent-card');
+      cards.forEach(card => {
+        if (card.querySelector('.agent-card-title').innerText.includes(dept.split(' ')[1])) {
+          card.classList.add('active-dept');
+        } else {
+          card.classList.remove('active-dept');
+        }
+      });
+
+      // Post greeting
+      const messagesContainer = document.getElementById('chatMessages');
+      const intro = departmentProfiles[dept].intro;
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble bubble-assistant';
+      bubble.innerHTML = `<div class="bubble-dept-tag">${departmentProfiles[dept].title}</div>${intro}`;
+      messagesContainer.appendChild(bubble);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function handleChatKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const messagesContainer = document.getElementById('chatMessages');
+
+      // User Message Bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'chat-bubble bubble-user';
+      userBubble.innerText = text;
+      messagesContainer.appendChild(userBubble);
+      input.value = '';
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      // Simulate Assistant Response
+      setTimeout(() => {
+        const assistantBubble = document.createElement('div');
+        assistantBubble.className = 'chat-bubble bubble-assistant';
+        const profile = departmentProfiles[currentDepartment];
+        const replyText = profile.sampleResponse(text);
+        assistantBubble.innerHTML = `<div class="bubble-dept-tag">${profile.title}</div>${replyText.replace(/\n/g, '<br>')}`;
+        messagesContainer.appendChild(assistantBubble);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, 600);
+    }
+
+    function toggleVoiceInput() {
+      openChatDrawer(currentDepartment);
+      const input = document.getElementById('chatInput');
+      input.placeholder = "Listening to voice input...";
+      setTimeout(() => {
+        input.value = "Explain Fourier Transform applications in DSP";
+        input.placeholder = "Ask SRAAN anything...";
+        sendMessage();
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
