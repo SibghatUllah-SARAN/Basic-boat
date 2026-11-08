@@ -1,0 +1,2715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRAAN AI — Personal Intelligence System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #030a13;
+      --card-bg: rgba(4, 21, 37, 0.75);
+      --card-border: rgba(0, 229, 255, 0.22);
+      --card-border-hover: rgba(0, 229, 255, 0.65);
+      --cyan-bright: #00f0ff;
+      --cyan-glow: rgba(0, 240, 255, 0.45);
+      --purple-accent: #a855f7;
+      --green-optimal: #00ffaa;
+      --amber-warn: #f59e0b;
+      --text-main: #e2f1ff;
+      --text-muted: #64829f;
+      --grid-line: rgba(0, 229, 255, 0.04);
+      --font-hud: 'Orbitron', monospace;
+      --font-body: 'Rajdhani', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* THEME: PURPLE / VIOLET */
+    [data-theme="violet"] {
+      --cyan-bright: #c084fc;
+      --cyan-glow: rgba(192, 132, 252, 0.45);
+      --card-border: rgba(192, 132, 252, 0.25);
+      --card-border-hover: rgba(192, 132, 252, 0.7);
+      --green-optimal: #f472b6;
+    }
+
+    /* THEME: MATRIX EMERALD */
+    [data-theme="emerald"] {
+      --cyan-bright: #10b981;
+      --cyan-glow: rgba(16, 185, 129, 0.45);
+      --card-border: rgba(16, 185, 129, 0.25);
+      --card-border-hover: rgba(16, 185, 129, 0.7);
+      --green-optimal: #34d399;
+    }
+
+    /* THEME: SOLAR AMBER */
+    [data-theme="amber"] {
+      --cyan-bright: #f59e0b;
+      --cyan-glow: rgba(245, 158, 11, 0.45);
+      --card-border: rgba(245, 158, 11, 0.25);
+      --card-border-hover: rgba(245, 158, 11, 0.7);
+      --green-optimal: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.4;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 10, 20, 0.8); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan-bright); border-radius: 4px; }
+
+    /* LAYOUT WRAPPER */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 12px 18px 80px 18px;
+      gap: 14px;
+      position: relative;
+    }
+
+    /* TOP HEADER */
+    .hud-header {
+      display: grid;
+      grid-template-columns: 240px auto 1fr auto;
+      align-items: center;
+      gap: 20px;
+      padding: 10px 18px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-ring {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid var(--cyan-bright);
+      box-shadow: 0 0 15px var(--cyan-glow), inset 0 0 10px var(--cyan-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .brand-logo-ring::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      background: var(--cyan-bright);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--cyan-bright);
+    }
+
+    .brand-title {
+      font-family: var(--font-hud);
+      font-weight: 900;
+      font-size: 17px;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--cyan-bright);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(0, 255, 170, 0.08);
+      border: 1px solid var(--green-optimal);
+      font-family: var(--font-hud);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--green-optimal);
+      text-shadow: 0 0 8px rgba(0, 255, 170, 0.4);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green-optimal);
+      box-shadow: 0 0 8px var(--green-optimal);
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .center-clock-block {
+      text-align: center;
+      justify-self: center;
+    }
+
+    .date-display {
+      font-family: var(--font-hud);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .clock-display {
+      font-family: var(--font-hud);
+      font-size: 26px;
+      letter-spacing: 3px;
+      color: var(--cyan-bright);
+      text-shadow: 0 0 12px var(--cyan-glow);
+      font-weight: 700;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-self: end;
+    }
+
+    .hud-search {
+      position: relative;
+    }
+
+    .hud-search input {
+      background: rgba(2, 14, 27, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      padding: 7px 12px 7px 32px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      width: 170px;
+      transition: all 0.3s;
+    }
+
+    .hud-search input:focus {
+      border-color: var(--cyan-bright);
+      box-shadow: 0 0 10px var(--cyan-glow);
+      width: 220px;
+    }
+
+    .hud-search svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      stroke: var(--text-muted);
+    }
+
+    .hud-icon-btn {
+      background: rgba(2, 15, 29, 0.7);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 7px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+
+    .hud-icon-btn:hover {
+      border-color: var(--cyan-bright);
+      box-shadow: 0 0 10px var(--cyan-glow);
+      color: var(--cyan-bright);
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(2, 15, 29, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 4px 10px 4px 12px;
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-info .role {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      font-family: var(--font-hud);
+    }
+
+    .user-info .name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #0284c7, var(--purple-accent));
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-hud);
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+    }
+
+    /* THEME MENU DROPDOWN */
+    .theme-select {
+      background: rgba(2, 14, 27, 0.9);
+      border: 1px solid var(--card-border);
+      color: var(--cyan-bright);
+      font-family: var(--font-hud);
+      font-size: 11px;
+      border-radius: 4px;
+      padding: 6px 8px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* MAIN COCKPIT GRID */
+    .cockpit-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 14px;
+      flex: 1;
+    }
+
+    /* LEFT SIDEBAR */
+    .hud-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .hud-nav-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 5px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13.5px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+    }
+
+    .nav-item:hover {
+      background: rgba(0, 240, 255, 0.08);
+      color: var(--cyan-bright);
+    }
+
+    .nav-item.active {
+      background: rgba(0, 240, 255, 0.14);
+      color: var(--cyan-bright);
+      border: 1px solid var(--cyan-glow);
+      box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.2);
+    }
+
+    .nav-badge {
+      font-family: var(--font-hud);
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--cyan-bright);
+      color: var(--cyan-bright);
+    }
+
+    /* VOICE STATUS WIDGET (SIDEBAR BOTTOM) */
+    .voice-widget {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .voice-widget-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-hud);
+      font-size: 10.5px;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+    }
+
+    .mic-sensor-ring {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px dashed var(--cyan-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      margin: 6px 0;
+      transition: all 0.3s;
+      background: rgba(0, 240, 255, 0.04);
+    }
+
+    .mic-sensor-ring:hover {
+      box-shadow: 0 0 20px var(--cyan-glow);
+      transform: scale(1.05);
+    }
+
+    .mic-sensor-ring.listening {
+      border-style: solid;
+      border-color: #ff0055;
+      animation: micPulse 1.2s infinite;
+      box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);
+    }
+
+    @keyframes micPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+
+    .mic-sensor-ring svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--cyan-bright);
+    }
+
+    .mic-sensor-ring.listening svg {
+      stroke: #ff0055;
+    }
+
+    .voice-status-label {
+      font-size: 12px;
+      color: var(--cyan-bright);
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .focus-btn {
+      width: 100%;
+      padding: 7px;
+      border: 1px solid var(--card-border);
+      background: rgba(0, 240, 255, 0.05);
+      color: var(--text-main);
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-hud);
+      font-size: 11px;
+      letter-spacing: 1px;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .focus-btn:hover {
+      border-color: var(--cyan-bright);
+      background: rgba(0, 240, 255, 0.15);
+      color: #fff;
+    }
+
+    /* RIGHT HUD WORKSPACE */
+    .hud-workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ROW 1: CORE / HOLOGRAM / LIVE FEED */
+    .row-top {
+      display: grid;
+      grid-template-columns: 210px 1.4fr 1.1fr;
+      gap: 14px;
+    }
+
+    .hud-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .hud-card:hover {
+      border-color: var(--card-border-hover);
+    }
+
+    .card-title-bar {
+      font-family: var(--font-hud);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* AI CORE OVERVIEW LIST */
+    .core-metrics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .core-metric-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .metric-icon-slot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--cyan-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan-bright);
+      font-size: 11px;
+      font-family: var(--font-hud);
+      flex-shrink: 0;
+    }
+
+    .metric-texts {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-name {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .metric-val {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .metric-val.highlight-green {
+      color: var(--green-optimal);
+      text-shadow: 0 0 6px rgba(0, 255, 170, 0.4);
+    }
+
+    .metric-val.highlight-cyan {
+      color: var(--cyan-bright);
+      text-shadow: 0 0 6px var(--cyan-glow);
+    }
+
+    /* HOLOGRAM HERO BANNER */
+    .hero-hologram-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      text-align: center;
+      padding: 20px;
+      min-height: 210px;
+      background: radial-gradient(circle at center, rgba(0, 240, 255, 0.12) 0%, rgba(4, 21, 37, 0.85) 70%);
+    }
+
+    #hologramCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .hero-center-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-center-content h1 {
+      font-family: var(--font-hud);
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: #fff;
+      text-shadow: 0 0 25px var(--cyan-bright), 0 0 50px var(--cyan-glow);
+      margin-bottom: 2px;
+    }
+
+    .hero-tagline-sub {
+      font-family: var(--font-hud);
+      font-size: 11.5px;
+      letter-spacing: 3px;
+      color: var(--cyan-bright);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .hero-version {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      letter-spacing: 2px;
+    }
+
+    /* LIVE INTELLIGENCE FEED */
+    .intel-feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .intel-feed-item {
+      background: rgba(2, 12, 23, 0.6);
+      border: 1px solid rgba(0, 229, 255, 0.12);
+      border-radius: 5px;
+      padding: 7px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12.5px;
+      transition: 0.2s;
+    }
+
+    .intel-feed-item:hover {
+      border-color: var(--card-border-hover);
+      background: rgba(0, 229, 255, 0.04);
+    }
+
+    .feed-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feed-title {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .feed-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge-tag {
+      font-family: var(--font-hud);
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .badge-info { background: rgba(0, 240, 255, 0.15); color: var(--cyan-bright); border: 1px solid var(--cyan-bright); }
+    .badge-warn { background: rgba(245, 158, 11, 0.15); color: var(--amber-warn); border: 1px solid var(--amber-warn); }
+    .badge-tip { background: rgba(168, 85, 247, 0.15); color: var(--purple-accent); border: 1px solid var(--purple-accent); }
+    .badge-focus { background: rgba(0, 255, 170, 0.15); color: var(--green-optimal); border: 1px solid var(--green-optimal); }
+
+    .feed-footer-link {
+      margin-top: 8px;
+      text-align: right;
+      font-family: var(--font-hud);
+      font-size: 10px;
+      color: var(--cyan-bright);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .feed-footer-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ROW 2: 6 DEPARTMENTS + TIMELINE + QUICK COMMANDS */
+    .row-middle {
+      display: grid;
+      grid-template-columns: 2.1fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* 6 INTELLIGENCE DEPARTMENTS GRID */
+    .departments-deck {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .dept-card {
+      background: rgba(2, 14, 27, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 108px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dept-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: transparent;
+      transition: 0.25s;
+    }
+
+    .dept-card:hover {
+      border-color: var(--cyan-bright);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .dept-card.selected {
+      border-color: var(--cyan-bright);
+      background: rgba(0, 240, 255, 0.08);
+      box-shadow: 0 0 20px var(--cyan-glow);
+    }
+
+    .dept-card.selected::before {
+      background: var(--cyan-bright);
+      box-shadow: 0 0 8px var(--cyan-bright);
+    }
+
+    .dept-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .dept-num-title {
+      font-family: var(--font-hud);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    .dept-status-badge {
+      font-family: var(--font-hud);
+      font-size: 9px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .dept-status-badge.active {
+      background: rgba(0, 255, 170, 0.15);
+      color: var(--green-optimal);
+      border: 1px solid var(--green-optimal);
+    }
+
+    .dept-status-badge.standby {
+      background: rgba(100, 130, 159, 0.15);
+      color: var(--text-muted);
+      border: 1px solid var(--text-muted);
+    }
+
+    .dept-wave {
+      width: 100%;
+      height: 18px;
+      margin: 4px 0;
+      stroke: var(--cyan-bright);
+      fill: none;
+      opacity: 0.7;
+    }
+
+    .dept-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.25;
+    }
+
+    /* MISSION TIMELINE */
+    .timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .timeline-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.07);
+      padding-bottom: 6px;
+    }
+
+    .timeline-time {
+      font-family: var(--font-hud);
+      font-size: 10.5px;
+      color: var(--cyan-bright);
+      width: 65px;
+      flex-shrink: 0;
+    }
+
+    .timeline-desc {
+      color: var(--text-main);
+      font-weight: 500;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .timeline-status {
+      font-family: var(--font-hud);
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .timeline-status.done {
+      color: var(--green-optimal);
+    }
+
+    /* QUICK COMMANDS */
+    .quick-cmd-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cmd-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(2, 14, 27, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-family: var(--font-hud);
+      font-size: 11px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cmd-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--cyan-bright);
+    }
+
+    .cmd-btn:hover {
+      border-color: var(--cyan-bright);
+      background: rgba(0, 240, 255, 0.12);
+      box-shadow: 0 0 12px var(--cyan-glow);
+      color: #fff;
+    }
+
+    /* ROW 3: SYSTEM MONITOR + MEMORY MAP + LLM ENGINES */
+    .row-bottom {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr 1.6fr;
+      gap: 14px;
+    }
+
+    /* SYSTEM GAUGES (CPU, RAM, DISK) */
+    .gauges-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 8px 0;
+    }
+
+    .gauge-wrapper {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .gauge-svg {
+      transform: rotate(-90deg);
+      width: 76px;
+      height: 76px;
+    }
+
+    .gauge-track {
+      fill: none;
+      stroke: rgba(0, 240, 255, 0.1);
+      stroke-width: 6;
+    }
+
+    .gauge-fill {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 188;
+      stroke-dashoffset: 140;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+
+    .gauge-cpu { stroke: var(--cyan-bright); }
+    .gauge-ram { stroke: var(--green-optimal); }
+    .gauge-disk { stroke: var(--purple-accent); }
+
+    .gauge-center-label {
+      position: absolute;
+      text-align: center;
+    }
+
+    .gauge-name {
+      font-family: var(--font-hud);
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .gauge-val {
+      font-family: var(--font-hud);
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* MEMORY MAP CARD */
+    .memory-graph-area {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .memory-svg-line {
+      flex: 1;
+      height: 60px;
+    }
+
+    .memory-stats-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: right;
+    }
+
+    .mem-stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mem-stat-num {
+      font-family: var(--font-hud);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--cyan-bright);
+    }
+
+    .mem-stat-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* LLM ENGINES STATUS */
+    .llm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .llm-badge {
+      background: rgba(2, 14, 27, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 5px;
+      padding: 7px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-family: var(--font-body);
+    }
+
+    .llm-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .llm-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green-optimal);
+      box-shadow: 0 0 6px var(--green-optimal);
+    }
+
+    .llm-dot.standby {
+      background: var(--text-muted);
+      box-shadow: none;
+    }
+
+    .llm-state-text {
+      font-family: var(--font-hud);
+      font-size: 10px;
+      color: var(--cyan-bright);
+    }
+
+    .llm-state-text.fast {
+      color: #38bdf8;
+    }
+
+    /* BOTTOM FLOATING ACTION BAR */
+    .bottom-command-bar {
+      position: fixed;
+      bottom: 10px;
+      left: 18px;
+      right: 18px;
+      z-index: 99;
+      background: rgba(3, 13, 24, 0.92);
+      border: 1px solid var(--card-border);
+      border-radius: 30px;
+      padding: 8px 24px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .bottom-telemetry-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .telemetry-node strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .telemetry-node span {
+      color: var(--cyan-bright);
+    }
+
+    .giant-talk-btn {
+      flex: 1;
+      max-width: 520px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--cyan-bright);
+      border-radius: 24px;
+      padding: 9px 20px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      cursor: pointer;
+      font-family: var(--font-hud);
+      font-size: 12px;
+      letter-spacing: 2px;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+      transition: all 0.25s;
+    }
+
+    .giant-talk-btn:hover {
+      background: rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 25px var(--cyan-glow);
+      transform: scale(1.02);
+    }
+
+    .giant-talk-btn.recording {
+      border-color: #ff0055;
+      background: rgba(255, 0, 85, 0.2);
+      box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);
+      animation: pulse 1.2s infinite;
+    }
+
+    .giant-talk-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--cyan-bright);
+    }
+
+    .giant-talk-btn.recording svg {
+      stroke: #ff0055;
+    }
+
+    .exec-briefing-btn {
+      background: transparent;
+      border: 1px solid var(--cyan-bright);
+      color: var(--cyan-bright);
+      font-family: var(--font-hud);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      padding: 9px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+
+    .exec-briefing-btn:hover {
+      background: var(--cyan-bright);
+      color: #000;
+      box-shadow: 0 0 15px var(--cyan-bright);
+    }
+
+    /* FULL INTELLIGENCE TERMINAL (MODAL/DRAWER) */
+    .terminal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(2, 8, 16, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+    }
+
+    .terminal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .terminal-modal {
+      width: 100%;
+      max-width: 900px;
+      height: 85vh;
+      background: rgba(3, 14, 25, 0.96);
+      border: 1px solid var(--cyan-bright);
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.35), inset 0 0 25px rgba(0, 240, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+
+    .terminal-overlay.open .terminal-modal {
+      transform: scale(1);
+    }
+
+    .terminal-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(2, 10, 18, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .terminal-agent-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .agent-avatar-hex {
+      width: 36px;
+      height: 36px;
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--cyan-bright);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-hud);
+      font-size: 13px;
+      color: var(--cyan-bright);
+    }
+
+    .agent-meta-title {
+      font-family: var(--font-hud);
+      font-size: 14px;
+      letter-spacing: 1.5px;
+      color: #fff;
+    }
+
+    .agent-meta-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .terminal-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tts-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--cyan-bright);
+      font-family: var(--font-hud);
+      font-size: 10px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .tts-toggle-btn.on {
+      border-color: var(--green-optimal);
+      color: var(--green-optimal);
+      background: rgba(0, 255, 170, 0.12);
+    }
+
+    .terminal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .terminal-close-btn:hover {
+      color: #ff0055;
+    }
+
+    /* TERMINAL CHAT BODY */
+    .terminal-chat-log {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      animation: fadeInMsg 0.3s ease;
+    }
+
+    @keyframes fadeInMsg {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-bubble.bot {
+      align-self: flex-start;
+    }
+
+    .chat-bubble.user {
+      align-self: flex-end;
+    }
+
+    .bubble-sender {
+      font-family: var(--font-hud);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--cyan-bright);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-bubble.user .bubble-sender {
+      color: var(--purple-accent);
+      justify-content: flex-end;
+    }
+
+    .bubble-content {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.55;
+      font-family: var(--font-body);
+    }
+
+    .chat-bubble.bot .bubble-content {
+      background: rgba(2, 17, 32, 0.85);
+      border: 1px solid var(--card-border);
+      color: #e6f3ff;
+      border-left: 3px solid var(--cyan-bright);
+    }
+
+    .chat-bubble.user .bubble-content {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #ffffff;
+      border-right: 3px solid var(--purple-accent);
+    }
+
+    .bubble-content code {
+      font-family: var(--font-mono);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: var(--cyan-bright);
+      font-size: 12.5px;
+    }
+
+    .bubble-content pre {
+      background: rgba(0, 5, 12, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 6px;
+      padding: 12px;
+      overflow-x: auto;
+      margin: 8px 0;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: #38bdf8;
+    }
+
+    /* AGENT PROMPT CHIPS */
+    .agent-preset-chips {
+      padding: 8px 20px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      background: rgba(1, 9, 17, 0.7);
+      border-top: 1px solid rgba(0, 229, 255, 0.08);
+    }
+
+    .preset-chip {
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s;
+    }
+
+    .preset-chip:hover {
+      border-color: var(--cyan-bright);
+      color: var(--cyan-bright);
+      background: rgba(0, 240, 255, 0.12);
+    }
+
+    /* TERMINAL INPUT BOX */
+    .terminal-input-bar {
+      padding: 14px 20px;
+      background: rgba(2, 10, 18, 0.95);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .terminal-text-field {
+      flex: 1;
+      background: rgba(1, 14, 26, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 14.5px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .terminal-text-field:focus {
+      border-color: var(--cyan-bright);
+      box-shadow: 0 0 12px var(--cyan-glow);
+    }
+
+    .term-mic-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--cyan-bright);
+      color: var(--cyan-bright);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+      flex-shrink: 0;
+    }
+
+    .term-mic-btn.active {
+      background: rgba(255, 0, 85, 0.25);
+      border-color: #ff0055;
+      color: #ff0055;
+      box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+    }
+
+    .term-mic-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .term-send-btn {
+      background: var(--cyan-bright);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 0 18px;
+      height: 42px;
+      font-family: var(--font-hud);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .term-send-btn:hover {
+      box-shadow: 0 0 15px var(--cyan-bright);
+      transform: translateY(-1px);
+    }
+
+    /* RESPONSIVE DESIGN (MOBILE & TABLETS) */
+    @media (max-width: 1200px) {
+      .row-top {
+        grid-template-columns: 1fr 1fr;
+      }
+      .hero-hologram-card {
+        grid-column: span 2;
+        order: -1;
+      }
+      .row-middle {
+        grid-template-columns: 1fr;
+      }
+      .row-bottom {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .app-shell {
+        padding: 8px 10px 100px 8px;
+      }
+      .hud-header {
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+      }
+      .center-clock-block {
+        grid-column: span 2;
+        order: 3;
+      }
+      .cockpit-grid {
+        grid-template-columns: 1fr;
+      }
+      .hud-sidebar {
+        display: none; /* Collapsed for mobile view */
+      }
+      .departments-deck {
+        grid-template-columns: 1fr;
+      }
+      .bottom-telemetry-left {
+        display: none;
+      }
+      .exec-briefing-btn {
+        display: none;
+      }
+      .giant-talk-btn {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body data-theme="cyan">
+
+  <div class="app-shell">
+
+    <!-- HUD TOP BAR -->
+    <header class="hud-header">
+      <div class="brand-group">
+        <div class="brand-logo-ring"></div>
+        <div>
+          <div class="brand-title">SRAAN AI</div>
+          <div class="brand-sub">COMMAND CENTER</div>
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <div class="pulse-dot"></div>
+        SYSTEM OPTIMAL
+      </div>
+
+      <div class="center-clock-block">
+        <div class="date-display" id="hudDate">SUNDAY, 8 NOVEMBER 2026</div>
+        <div class="clock-display" id="hudTime">07:44:23 PM</div>
+      </div>
+
+      <div class="header-controls">
+        <div class="hud-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" placeholder="Search commands...">
+        </div>
+
+        <select class="theme-select" id="themeSelector" onchange="changeTheme(this.value)">
+          <option value="cyan">Electric Cyan</option>
+          <option value="violet">Cyber Violet</option>
+          <option value="emerald">Matrix Emerald</option>
+          <option value="amber">Solar Amber</option>
+        </select>
+
+        <button class="hud-icon-btn" title="System Settings" onclick="alert('All 6 SRAAN Neural Subsystems Online • Zero Latency Gateway Active.')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <div class="user-badge">
+          <div class="user-info">
+            <div class="role">Operator</div>
+            <div class="name">Commander</div>
+          </div>
+          <div class="user-avatar">SR</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY GRID -->
+    <div class="cockpit-grid">
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="hud-sidebar">
+        <nav class="hud-nav-card">
+          <a class="nav-item active" onclick="makeActiveNav(this)">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>Command Center</span>
+            </div>
+          </a>
+          <a class="nav-item" onclick="launchAgent('01')">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+              <span>AI Core</span>
+            </div>
+          </a>
+          <a class="nav-item" onclick="makeActiveNav(this)">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span>Agents</span>
+            </div>
+            <span class="nav-badge">6</span>
+          </a>
+          <a class="nav-item" onclick="launchAgent('05')">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>Tasks</span>
+            </div>
+            <span class="nav-badge">3</span>
+          </a>
+          <a class="nav-item" onclick="makeActiveNav(this)">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <span>Calendar</span>
+            </div>
+          </a>
+          <a class="nav-item" onclick="launchAgent('06')">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+              <span>Memory</span>
+            </div>
+          </a>
+          <a class="nav-item" onclick="launchAgent('02')">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span>Conversations</span>
+            </div>
+            <span class="nav-badge">12</span>
+          </a>
+          <a class="nav-item" onclick="launchAgent('04')">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span>Knowledge Base</span>
+            </div>
+          </a>
+          <a class="nav-item" onclick="makeActiveNav(this)">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <span>Tools & Skills</span>
+            </div>
+            <span class="nav-badge">18</span>
+          </a>
+          <a class="nav-item" onclick="launchAgent('03')">
+            <div class="nav-item-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <span>Workflows</span>
+            </div>
+          </a>
+        </nav>
+
+        <!-- VOICE STATUS -->
+        <div class="voice-widget">
+          <div class="voice-widget-header">
+            <span>VOICE STATUS</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </div>
+          <div class="voice-status-label" id="sideMicStatus">Listening...</div>
+          <div class="mic-sensor-ring" id="sidebarMic" onclick="triggerGlobalVoiceInput()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted);">Tap to Speak</div>
+          <button class="focus-btn" onclick="toggleFocusMode()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+            Focus Mode
+          </button>
+        </div>
+      </aside>
+
+      <!-- WORKSPACE PANELS -->
+      <main class="hud-workspace">
+
+        <!-- ROW 1 -->
+        <section class="row-top">
+          <!-- AI CORE OVERVIEW -->
+          <div class="hud-card">
+            <div class="card-title-bar">AI CORE OVERVIEW</div>
+            <div class="core-metrics-list">
+              <div class="core-metric-item">
+                <div class="metric-icon-slot">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                <div class="metric-texts">
+                  <span class="metric-name">AI Core</span>
+                  <span class="metric-val highlight-green">Active</span>
+                </div>
+              </div>
+
+              <div class="core-metric-item">
+                <div class="metric-icon-slot">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path></svg>
+                </div>
+                <div class="metric-texts">
+                  <span class="metric-name">Memory</span>
+                  <span class="metric-val">3,380 Stored</span>
+                </div>
+              </div>
+
+              <div class="core-metric-item">
+                <div class="metric-icon-slot">0</div>
+                <div class="metric-texts">
+                  <span class="metric-name">Voice</span>
+                  <span class="metric-val highlight-cyan">Online</span>
+                </div>
+              </div>
+
+              <div class="core-metric-item">
+                <div class="metric-icon-slot">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                </div>
+                <div class="metric-texts">
+                  <span class="metric-name">Departments</span>
+                  <span class="metric-val">6 Active</span>
+                </div>
+              </div>
+
+              <div class="core-metric-item">
+                <div class="metric-icon-slot">◉</div>
+                <div class="metric-texts">
+                  <span class="metric-name">LLMs</span>
+                  <span class="metric-val">4 Connected</span>
+                </div>
+              </div>
+
+              <div class="core-metric-item">
+                <div class="metric-icon-slot">✓</div>
+                <div class="metric-texts">
+                  <span class="metric-name">System</span>
+                  <span class="metric-val highlight-green">Optimal</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CENTER HOLOGRAM HERO -->
+          <div class="hud-card hero-hologram-card">
+            <canvas id="hologramCanvas"></canvas>
+            <div class="hero-center-content">
+              <h1>SRAAN</h1>
+              <div class="hero-tagline-sub">AI CORE ECOSYSTEM</div>
+              <div class="hero-version">v1.0.0 • INTELLIGENCE BEYOND IMAGINATION</div>
+            </div>
+          </div>
+
+          <!-- LIVE INTELLIGENCE FEED -->
+          <div class="hud-card">
+            <div class="card-title-bar">
+              <span>LIVE INTELLIGENCE FEED</span>
+              <span class="pulse-dot"></span>
+            </div>
+            <div class="intel-feed-list">
+              <div class="intel-feed-item">
+                <div class="feed-body">
+                  <span class="feed-title">Design review with product team</span>
+                  <span class="feed-sub">Meeting scheduled for 02:00 PM</span>
+                </div>
+                <span class="badge-tag badge-info">INFO</span>
+              </div>
+
+              <div class="intel-feed-item">
+                <div class="feed-body">
+                  <span class="feed-title">2 tasks overdue — SRAAN CODE</span>
+                  <span class="feed-sub">Sandbox pipeline timeout flagged</span>
+                </div>
+                <span class="badge-tag badge-warn">WARN</span>
+              </div>
+
+              <div class="intel-feed-item">
+                <div class="feed-body">
+                  <span class="feed-title">3 PRs awaiting SRAAN review</span>
+                  <span class="feed-sub">Automated unit test passes: 98%</span>
+                </div>
+                <span class="badge-tag badge-tip">TIP</span>
+              </div>
+
+              <div class="intel-feed-item">
+                <div class="feed-body">
+                  <span class="feed-title">Deep-work block is 2-4 PM</span>
+                  <span class="feed-sub">All notifications auto-muted</span>
+                </div>
+                <span class="badge-tag badge-focus">FOCUS</span>
+              </div>
+            </div>
+            <div class="feed-footer-link" onclick="launchAgent('05')">View All Intelligence &gt;</div>
+          </div>
+        </section>
+
+        <!-- ROW 2: ACTIVE DEPARTMENTS + TIMELINE + COMMANDS -->
+        <section class="row-middle">
+          <!-- 6 DEPARTMENTS -->
+          <div class="hud-card">
+            <div class="card-title-bar">
+              <span>ACTIVE INTELLIGENCE DEPARTMENTS</span>
+              <span style="color:var(--cyan-bright); cursor:pointer;" onclick="launchAgent('01')">Open Terminal &gt;</span>
+            </div>
+            <div class="departments-deck">
+
+              <!-- DEPT 01 -->
+              <div class="dept-card selected" id="card-01" onclick="launchAgent('01')">
+                <div class="dept-card-top">
+                  <span class="dept-num-title">01 SRAAN EDU</span>
+                  <span class="dept-status-badge active">Active</span>
+                </div>
+                <svg class="dept-wave" viewBox="0 0 100 20">
+                  <path d="M0,10 Q25,2 50,10 T100,10"></path>
+                </svg>
+                <div class="dept-desc">Academic professor • Math &amp; University solver</div>
+              </div>
+
+              <!-- DEPT 02 -->
+              <div class="dept-card" id="card-02" onclick="launchAgent('02')">
+                <div class="dept-card-top">
+                  <span class="dept-num-title">02 SRAAN CODE</span>
+                  <span class="dept-status-badge active">Active</span>
+                </div>
+                <svg class="dept-wave" viewBox="0 0 100 20">
+                  <path d="M0,10 Q25,18 50,10 T100,10"></path>
+                </svg>
+                <div class="dept-desc">Coding partner • Python, C++, JS sandbox</div>
+              </div>
+
+              <!-- DEPT 03 -->
+              <div class="dept-card" id="card-03" onclick="launchAgent('03')">
+                <div class="dept-card-top">
+                  <span class="dept-num-title">03 SRAAN BIZ</span>
+                  <span class="dept-status-badge standby">Standby</span>
+                </div>
+                <svg class="dept-wave" viewBox="0 0 100 20">
+                  <path d="M0,15 Q30,5 60,15 T100,12"></path>
+                </svg>
+                <div class="dept-desc">Business consultant • Strategy &amp; proposals</div>
+              </div>
+
+              <!-- DEPT 04 -->
+              <div class="dept-card" id="card-04" onclick="launchAgent('04')">
+                <div class="dept-card-top">
+                  <span class="dept-num-title">04 SRAAN RSCH</span>
+                  <span class="dept-status-badge active">Active</span>
+                </div>
+                <svg class="dept-wave" viewBox="0 0 100 20">
+                  <path d="M0,8 Q20,18 50,8 T100,10"></path>
+                </svg>
+                <div class="dept-desc">Research analyst • Papers &amp; citations</div>
+              </div>
+
+              <!-- DEPT 05 -->
+              <div class="dept-card" id="card-05" onclick="launchAgent('05')">
+                <div class="dept-card-top">
+                  <span class="dept-num-title">05 SRAAN LIFE</span>
+                  <span class="dept-status-badge standby">Standby</span>
+                </div>
+                <svg class="dept-wave" viewBox="0 0 100 20">
+                  <path d="M0,12 Q35,2 70,14 T100,8"></path>
+                </svg>
+                <div class="dept-desc">Productivity • Deadlines, goals &amp; tracking</div>
+              </div>
+
+              <!-- DEPT 06 -->
+              <div class="dept-card" id="card-06" onclick="launchAgent('06')">
+                <div class="dept-card-top">
+                  <span class="dept-num-title">06 SRAAN DATA</span>
+                  <span class="dept-status-badge standby">Standby</span>
+                </div>
+                <svg class="dept-wave" viewBox="0 0 100 20">
+                  <path d="M0,14 Q25,8 55,14 T100,10"></path>
+                </svg>
+                <div class="dept-desc">Data analytics • CSV, interactive charts &amp; ML</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- MISSION TIMELINE -->
+          <div class="hud-card">
+            <div class="card-title-bar">
+              <span>MISSION TIMELINE</span>
+              <span style="color:var(--cyan-bright);">Today ⌵</span>
+            </div>
+            <div class="timeline-list">
+              <div class="timeline-item">
+                <span class="timeline-time">09:30 AM</span>
+                <span class="timeline-desc">Daily Standup</span>
+                <span class="timeline-status done">Done</span>
+              </div>
+              <div class="timeline-item">
+                <span class="timeline-time">12:00 PM</span>
+                <span class="timeline-desc">Finalize HUD Spacing</span>
+                <span class="timeline-status">In 42 min</span>
+              </div>
+              <div class="timeline-item">
+                <span class="timeline-time">02:00 PM</span>
+                <span class="timeline-desc">Deep-work: Voice Pipeline</span>
+                <span class="timeline-status">In 2h 42m</span>
+              </div>
+              <div class="timeline-item">
+                <span class="timeline-time">04:30 PM</span>
+                <span class="timeline-desc">Design Review — Command Center V1</span>
+                <span class="timeline-status">In 5h 12m</span>
+              </div>
+            </div>
+            <div class="feed-footer-link" onclick="launchAgent('05')">View Full Schedule &gt;</div>
+          </div>
+
+          <!-- QUICK COMMANDS -->
+          <div class="hud-card">
+            <div class="card-title-bar">QUICK COMMANDS</div>
+            <div class="quick-cmd-list">
+              <button class="cmd-btn" onclick="launchAgent('05', 'Create a new high-priority project task with milestones')">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Start New Task
+              </button>
+              <button class="cmd-btn" onclick="launchAgent('05', 'Open and sync my university schedule')">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+                Open Calendar
+              </button>
+              <button class="cmd-btn" onclick="triggerGlobalVoiceInput()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Start Voice Chat
+              </button>
+              <button class="cmd-btn" onclick="launchAgent('02', 'Execute current Python code test sandbox')">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Run Sandbox Workflow
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ROW 3: SYSTEM MONITOR + MEMORY MAP + LLM ENGINES -->
+        <section class="row-bottom">
+          <!-- SYSTEM MONITOR -->
+          <div class="hud-card">
+            <div class="card-title-bar">SYSTEM MONITOR</div>
+            <div class="gauges-row">
+              <!-- CPU -->
+              <div class="gauge-wrapper">
+                <svg class="gauge-svg" viewBox="0 0 70 70">
+                  <circle class="gauge-track" cx="35" cy="35" r="30"></circle>
+                  <circle class="gauge-fill gauge-cpu" id="gaugeCpu" cx="35" cy="35" r="30"></circle>
+                </svg>
+                <div class="gauge-center-label">
+                  <div class="gauge-name">CPU</div>
+                  <div class="gauge-val" id="cpuVal">16%</div>
+                </div>
+              </div>
+
+              <!-- RAM -->
+              <div class="gauge-wrapper">
+                <svg class="gauge-svg" viewBox="0 0 70 70">
+                  <circle class="gauge-track" cx="35" cy="35" r="30"></circle>
+                  <circle class="gauge-fill gauge-ram" id="gaugeRam" cx="35" cy="35" r="30"></circle>
+                </svg>
+                <div class="gauge-center-label">
+                  <div class="gauge-name">RAM</div>
+                  <div class="gauge-val" id="ramVal">52%</div>
+                </div>
+              </div>
+
+              <!-- DISK -->
+              <div class="gauge-wrapper">
+                <svg class="gauge-svg" viewBox="0 0 70 70">
+                  <circle class="gauge-track" cx="35" cy="35" r="30"></circle>
+                  <circle class="gauge-fill gauge-disk" id="gaugeDisk" cx="35" cy="35" r="30"></circle>
+                </svg>
+                <div class="gauge-center-label">
+                  <div class="gauge-name">DISK</div>
+                  <div class="gauge-val" id="diskVal">40%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MEMORY INSIGHTS -->
+          <div class="hud-card">
+            <div class="card-title-bar">
+              <span>MEMORY INSIGHTS</span>
+              <span style="color:var(--cyan-bright); cursor:pointer;" onclick="launchAgent('06')">View Memory Map &gt;</span>
+            </div>
+            <div class="memory-graph-area">
+              <svg class="memory-svg-line" viewBox="0 0 200 60">
+                <polyline fill="none" stroke="var(--cyan-bright)" stroke-width="2" points="10,40 50,15 90,48 130,22 170,30 190,10"></polyline>
+                <circle cx="10" cy="40" r="3.5" fill="var(--cyan-bright)"></circle>
+                <circle cx="50" cy="15" r="3.5" fill="var(--cyan-bright)"></circle>
+                <circle cx="90" cy="48" r="3.5" fill="var(--cyan-bright)"></circle>
+                <circle cx="130" cy="22" r="3.5" fill="var(--cyan-bright)"></circle>
+                <circle cx="170" cy="30" r="3.5" fill="var(--cyan-bright)"></circle>
+                <circle cx="190" cy="10" r="4.5" fill="#fff" stroke="var(--cyan-bright)" stroke-width="2"></circle>
+              </svg>
+
+              <div class="memory-stats-block">
+                <div class="mem-stat-item">
+                  <span class="mem-stat-lbl">Memories</span>
+                  <span class="mem-stat-num">3,380</span>
+                </div>
+                <div class="mem-stat-item">
+                  <span class="mem-stat-lbl">Session Turns</span>
+                  <span class="mem-stat-num" id="turnCounter">22</span>
+                </div>
+                <div class="mem-stat-item">
+                  <span class="mem-stat-lbl">Tool Calls</span>
+                  <span class="mem-stat-num">14</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LLM ENGINE STATUS -->
+          <div class="hud-card">
+            <div class="card-title-bar">
+              <span>LLM ENGINE STATUS</span>
+              <span style="color:var(--cyan-bright);">4 Connected</span>
+            </div>
+            <div class="llm-grid">
+              <div class="llm-badge">
+                <div class="llm-name"><div class="llm-dot"></div> Claude 3.5</div>
+                <div class="llm-state-text">Connected</div>
+              </div>
+              <div class="llm-badge">
+                <div class="llm-name"><div class="llm-dot"></div> OpenAI GPT-4o</div>
+                <div class="llm-state-text">Connected</div>
+              </div>
+              <div class="llm-badge">
+                <div class="llm-name"><div class="llm-dot"></div> Groq Llama 3</div>
+                <div class="llm-state-text fast">Ultra-Fast</div>
+              </div>
+              <div class="llm-badge">
+                <div class="llm-name"><div class="llm-dot"></div> Gemini 1.5 Pro</div>
+                <div class="llm-state-text">Connected</div>
+              </div>
+              <div class="llm-badge">
+                <div class="llm-name"><div class="llm-dot standby"></div> Ollama Local</div>
+                <div class="llm-state-text" style="color:var(--text-muted)">Standby</div>
+              </div>
+              <div class="llm-badge">
+                <div class="llm-name"><div class="llm-dot"></div> SRAAN Sandbox</div>
+                <div class="llm-state-text">Ready</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- BOTTOM FLOATING ACTION BAR -->
+    <footer class="bottom-command-bar">
+      <div class="bottom-telemetry-left">
+        <div class="telemetry-node">Location: <strong>Bhimber, Pakistan</strong></div>
+        <div class="telemetry-node">Weather: <span>28°C Overcast</span></div>
+        <div class="telemetry-node">Network: <span style="color:var(--green-optimal)">Excellent</span></div>
+      </div>
+
+      <div class="giant-talk-btn" id="giantTalkBtn" onclick="triggerGlobalVoiceInput()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+        </svg>
+        <div style="display:flex; flex-direction:column; align-items:flex-start; text-align:left;">
+          <span style="font-weight:700; color:#fff;" id="giantTalkHeader">TALK TO SRAAN</span>
+          <span style="font-size:10px; color:var(--text-muted); font-family:var(--font-body); letter-spacing:0;" id="giantTalkSub">I am listening... Click to initiate conversation</span>
+        </div>
+      </div>
+
+      <button class="exec-briefing-btn" onclick="deliverExecutiveBriefing()">
+        <span>▶</span> Executive Briefing
+      </button>
+    </footer>
+
+  </div>
+
+  <!-- INTERACTIVE TERMINAL HUD MODAL -->
+  <div class="terminal-overlay" id="terminalOverlay">
+    <div class="terminal-modal">
+      
+      <!-- TOP BAR -->
+      <div class="terminal-header">
+        <div class="terminal-agent-info">
+          <div class="agent-avatar-hex" id="agentHexId">01</div>
+          <div>
+            <div class="agent-meta-title" id="agentTitle">SRAAN EDU — Academic Professor</div>
+            <div class="agent-meta-sub" id="agentSubtitle">Mathematics, Engineering & University Step-by-Step Solver</div>
+          </div>
+        </div>
+
+        <div class="terminal-tools">
+          <button class="tts-toggle-btn on" id="ttsToggle" onclick="toggleVoiceSpeech()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            Voice Voice: ON
+          </button>
+          <button class="terminal-close-btn" onclick="closeTerminal()">✕</button>
+        </div>
+      </div>
+
+      <!-- CHAT STREAM LOG -->
+      <div class="terminal-chat-log" id="terminalLog">
+        <!-- Messages appended dynamically -->
+      </div>
+
+      <!-- PRESET PROMPT SHORTCUT CHIPS -->
+      <div class="agent-preset-chips" id="agentChips">
+        <!-- Preset quick questions inserted dynamically -->
+      </div>
+
+      <!-- INPUT BAR -->
+      <div class="terminal-input-bar">
+        <input type="text" class="terminal-text-field" id="terminalInput" placeholder="Ask your intelligence department..." onkeydown="handleInputKey(event)">
+        
+        <button class="term-mic-btn" id="termMicBtn" onclick="toggleTerminalVoiceInput()" title="Speak prompt">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+          </svg>
+        </button>
+
+        <button class="term-send-btn" onclick="sendTerminalPrompt()">TRANSMIT</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================================
+       1. DEPARTMENT KNOWLEDGE BASES & SYSTEM ARCHITECTURES
+    ===================================================================== */
+    const DEPARTMENTS = {
+      '01': {
+        id: '01',
+        name: '01 SRAAN EDU',
+        title: 'SRAAN EDU — Academic Professor',
+        sub: 'Step-by-step problem solver • Math & university exam preparation (English & Urdu)',
+        greeting: "Greetings, Scholar. I am SRAAN EDU, your personal academic professor. Whether you need calculus derivations, physics mechanics, exam paper MCQs, or explanations in English or Roman Urdu, I am ready. What are we studying today?",
+        chips: [
+          "Solve: dy/dx of sin(3x) * e^(2x)",
+          "Explain Quantum Entanglement simply",
+          "Generate 3 MCQs on Data Structures",
+          "Urdu: Newton ka 3rd law kya hai?"
+        ],
+        respond: (q) => {
+          const lower = q.toLowerCase();
+          if (lower.includes("dy/dx") || lower.includes("derivative") || lower.includes("math")) {
+            return `### Step-by-Step Derivation:\nTo find the derivative of \`f(x) = sin(3x) · e^(2x)\`, we use the **Product Rule**:\n\`(u · v)' = u'v + uv'\`\n\n1. Let \`u = sin(3x)\` ➔ \`u' = 3cos(3x)\` (by Chain Rule).\n2. Let \`v = e^(2x)\` ➔ \`v' = 2e^(2x)\`.\n\nCombine both terms:\n\`f'(x) = 3cos(3x)·e^(2x) + 2sin(3x)·e^(2x)\`\n\n**Factored Final Form:**\n\`f'(x) = e^(2x) [ 3cos(3x) + 2sin(3x) ]\`\n\nWould you like me to plot this or test second derivatives?`;
+          }
+          if (lower.includes("urdu") || lower.includes("kya hai") || lower.includes("karein")) {
+            return `**Aapka Academic Jawab:**\n\nNewton ka Third Law of Motion kehta hai:\n> *"To every action, there is always an equal and opposite reaction."*\n\n**Aasan Alfaz mein:**\nJab aap kisi cheez par force (action) lagate hain, to woh cheez bhi bilkul barabar miqdaar (equal magnitude) mein lekin mukhalif simt (opposite direction) mein aap par force lagati hai.\n\n*Misaal:* Rocket ka launch hona. Gas neeche ki taraf nikalti hai (Action), aur rocket ooper asman ki taraf jata hai (Reaction).`;
+          }
+          if (lower.includes("mcq") || lower.includes("quiz")) {
+            return `### Academic Quiz: Data Structures\n\n**Q1. What is the average time complexity of searching an element in a Balanced Binary Search Tree (AVL)?**\n- A) O(1)\n- B) O(log n) [✓ Correct]\n- C) O(n)\n- D) O(n log n)\n\n**Q2. Which data structure follows the LIFO (Last In First Out) principle?**\n- A) Queue\n- B) Priority Queue\n- C) Stack [✓ Correct]\n- D) Linked List\n\nTell me which topic you want to drill next!`;
+          }
+          return `I have analyzed your query from an academic lens: "${q}".\n\nHere is the systematic breakdown:\n1. **Core Concept Identified:** Theoretical and foundational principles applicable to the topic.\n2. **Detailed Solution & Formula:** We approach this by isolating variables, applying theorem axioms, and validating boundary parameters.\n3. **Practical Example:** Real-world university engineering labs use this exact sequence for verified proofs.\n\nLet me know if you would like an exam-ready MCQ sheet or an Urdu summary.`;
+        }
+      },
+      '02': {
+        id: '02',
+        name: '02 SRAAN CODE',
+        title: 'SRAAN CODE — Programming Partner',
+        sub: 'Python, C++, TypeScript, SQL & Architecture sandbox compiler',
+        greeting: "Terminal initialized. I am SRAAN CODE. My sandbox is ready to architect microservices, optimize memory leaks, write clean algorithms, or debug complex distributed code. What are we building?",
+        chips: [
+          "Python: Fast Async API with FastAPI",
+          "C++: Pointer memory leak fix",
+          "SQL: Optimized indexing query",
+          "Debug: JavaScript Event Loop error"
+        ],
+        respond: (q) => {
+          const lower = q.toLowerCase();
+          if (lower.includes("python") || lower.includes("fastapi")) {
+            return `Here is a production-grade asynchronous **FastAPI** skeleton with schema validation and health telemetry:\n\n\`\`\`python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import asyncio
+
+app = FastAPI(title="SRAAN Neural Gateway", version="1.0.0")
+
+class TelemetryPayload(BaseModel):
+    node_id: str
+    status: str
+    latency_ms: float
+
+@app.post("/v1/telemetry")
+async def ingest_telemetry(payload: TelemetryPayload):
+    await asyncio.sleep(0.01) # Non-blocking I/O
+    if payload.latency_ms > 500:
+        raise HTTPException(status_code=400, detail="High latency threshold")
+    return {"status": "ACK", "recorded": payload.node_id}
+\`\`\`\nSandbox test passes with 0 syntax errors. Ready for deployment.`;
+          }
+          return `Compiler Analysis Complete for: \`${q}\`\n\n\`\`\`cpp
+// High performance Zero-Copy Buffer Implementation
+#include <iostream>
+#include <memory>
+
+template<typename T>
+class SraanBuffer {
+    std::unique_ptr<T[]> data;
+    size_t capacity;
+public:
+    explicit SraanBuffer(size_t cap) : capacity(cap), data(std::make_unique<T[]>(cap)) {}
+    inline T& operator[](size_t idx) { return data[idx]; }
+};
+\`\`\`\n- **Complexity:** O(1) direct memory access.\n- **Status:** Valgrind check reports 0 leaks, 0 byte corruption.`;
+        }
+      },
+      '03': {
+        id: '03',
+        name: '03 SRAAN BIZ',
+        title: 'SRAAN BIZ — Business Consultant',
+        sub: 'Executive strategy, freelancing contracts, SEO, pitch decks & revenue growth',
+        greeting: "Welcome, Commander. SRAAN BIZ is online. Let us build your high-converting pitch proposals, freelance revenue strategies, enterprise market analyses, and client acquisition funnels.",
+        chips: [
+          "Write Upwork proposal for $5,000 project",
+          "SaaS pricing tier strategy",
+          "Analyze modern B2B SEO roadmap",
+          "Cold outreach email template"
+        ],
+        respond: (q) => {
+          return `### Strategic Business Blueprint\n**Target Objective:** Execution on "${q}"\n\n1. **High-Converting Proposal Framework:**\n- **The Hook:** Acknowledge their exact pain point in the first 2 sentences. Don't waste time introducing yourself.\n- **The SRAAN Proof of Concept:** Provide a 3-point roadmap of how you've resolved this exact bottleneck with measurable KPIs.\n- **The Call to Action:** "Are you free for an 8-minute briefing this Thursday at 3 PM PKT to inspect the live preview?"\n\n2. **Financial Upsell Potential:**\n- Offer a recurring retainer model: $1,200/month for active SLA monitoring and maintenance.\n\nWould you like me to generate the full PDF contract draft or cold pitch message?`;
+        }
+      },
+      '04': {
+        id: '04',
+        name: '04 SRAAN RSCH',
+        title: 'SRAAN RSCH — Academic Research Analyst',
+        sub: 'Literature reviews, source citations, peer-review papers & data hygiene',
+        greeting: "Research desk active. SRAAN RSCH ready to parse ArXiv/IEEE publications, formulate empirical literature reviews, extract bibliographies, and structure thesis dissertations.",
+        chips: [
+          "Format IEEE citation for Transformer paper",
+          "Literature review on Multimodal AI",
+          "Formulate null hypothesis for dataset",
+          "Data cleaning methodology"
+        ],
+        respond: (q) => {
+          return `### Literature Review & Bibliographic Analysis\n**Inquiry:** "${q}"\n\n- **Peer-Reviewed Context:** Recent studies (2024–2026) in empirical artificial intelligence demonstrate that decentralized agent swarms outperform monolithic LLMs by 34.2% on multi-step reasoning benchmarks.\n\n- **APA 7th Edition Citation:**\n> *Vaswani, A., et al. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30, 5998–6008.*\n\n- **Methodology Recommendation:** Utilize double-blind quantitative statistical significance testing (p < 0.01) with Wilcoxon signed-rank tests.\n\nWould you like me to synthesize 5 additional verified references for your bibliography?`;
+        }
+      },
+      '05': {
+        id: '05',
+        name: '05 SRAAN LIFE',
+        title: 'SRAAN LIFE — Personal Productivity Assistant',
+        sub: 'Goal architecture, scholarship deadlines, Eisenhower matrix & daily habits',
+        greeting: "Focus Mode ready. I am SRAAN LIFE. I monitor your study timetables, deep-work sprints, scholarship deadlines, and daily routine optimization. How can I streamline your day?",
+        chips: [
+          "Plan a 4-hour Deep Work block",
+          "Organize university scholarship roadmap",
+          "Daily habit tracker routine",
+          "Eisenhower priority breakdown"
+        ],
+        respond: (q) => {
+          return `### Optimized Productivity Schedule\n**Task Context:** "${q}"\n\n**Eisenhower Matrix Prioritization:**\n1. **URGENT & CRITICAL:** HUD design code check-in & Voice Recognition pipeline verification.\n2. **IMPORTANT (NOT URGENT):** 45-minute academic research review & GitHub portfolio documentation.\n3. **DELEGATE/AUTOMATE:** System telemetry updates (handled automatically by SRAAN AI Core).\n\n**Recommended 90-Minute Focus Sprint:**\n- **00 - 45 min:** Pure uninterrupted execution (Zero notifications).\n- **45 - 50 min:** Hydration & optic rest.\n- **50 - 90 min:** Sandbox code compile & final commit.\n\nTimer ready. Shall I initiate your focus countdown?`;
+        }
+      },
+      '06': {
+        id: '06',
+        name: '06 SRAAN DATA',
+        title: 'SRAAN DATA — Intelligent Data Analyst',
+        sub: 'CSV/Excel parsing, interactive charting, statistical metrics & ML regression',
+        greeting: "Data pipeline connected. I am SRAAN DATA. Feed me your raw telemetry, CSV spreadsheets, financial figures, or distribution sets. I calculate Pearson correlations, regression lines, and visual distributions instantly.",
+        chips: [
+          "Analyze 10,000-row CSV file",
+          "Generate statistical distribution metrics",
+          "Explain PCA vs t-SNE dimensionality",
+          "Python Pandas cleaning snippet"
+        ],
+        respond: (q) => {
+          return `### Quantitative Data Analysis\n**Query Analyzed:** "${q}"\n\n**Computed Dataset Summary:**\n- **Sample Size (N):** 3,380 entries parsed.\n- **Mean (μ):** 84.62 ms latency | **Median:** 79.10 ms\n- **Standard Deviation (σ):** ± 4.12 ms (Low variance, optimal stability).\n- **Pearson Correlation (r):** 0.94 (Strong positive correlation between cache warming and throughput).\n\n\`\`\`python
+import pandas as pd
+df = pd.read_csv('telemetry.csv')
+cleaned_df = df.dropna().query('response_time < 500')
+print(cleaned_df.describe())
+\`\`\`\nVisual distribution curve rendered. All data points conform to Gaussian normal limits.`;
+        }
+      }
+    };
+
+    let activeDeptKey = '01';
+    let isVoiceSpeechEnabled = true;
+    let isSpeechRecognitionActive = false;
+    let recognition = null;
+    let sessionTurns = 22;
+
+    /* =====================================================================
+       2. REAL-TIME CLOCK & HUD TELEMETRY INITIALIZATION
+    ===================================================================== */
+    function initRealtimeClock() {
+      function update() {
+        const now = new Date();
+        const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+        const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+        
+        const dateStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        
+        let hours = now.getHours();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const hStr = String(hours).padStart(2, '0');
+        const mStr = String(now.getMinutes()).padStart(2, '0');
+        const sStr = String(now.getSeconds()).padStart(2, '0');
+        const timeStr = `${hStr}:${mStr}:${sStr} ${ampm}`;
+
+        const dateEl = document.getElementById('hudDate');
+        const timeEl = document.getElementById('hudTime');
+        if (dateEl) dateEl.innerText = dateStr;
+        if (timeEl) timeEl.innerText = timeStr;
+      }
+      update();
+      setInterval(update, 1000);
+    }
+
+    /* Live subtle gauge jitter to simulate real telemetry */
+    function initDynamicGauges() {
+      setInterval(() => {
+        const cpu = Math.floor(14 + Math.random() * 8);
+        const ram = Math.floor(51 + Math.random() * 4);
+        const disk = 40;
+
+        document.getElementById('cpuVal').innerText = cpu + '%';
+        document.getElementById('ramVal').innerText = ram + '%';
+        document.getElementById('diskVal').innerText = disk + '%';
+
+        // 188 is full circumference for r=30
+        const cpuOffset = 188 - (188 * cpu) / 100;
+        const ramOffset = 188 - (188 * ram) / 100;
+        const diskOffset = 188 - (188 * disk) / 100;
+
+        document.getElementById('gaugeCpu').style.strokeDashoffset = cpuOffset;
+        document.getElementById('gaugeRam').style.strokeDashoffset = ramOffset;
+        document.getElementById('gaugeDisk').style.strokeDashoffset = diskOffset;
+      }, 3500);
+    }
+
+    /* =====================================================================
+       3. 3D PARTICLE HOLOGRAM CANVAS (SRAAN AI CORE ORB)
+    ===================================================================== */
+    function initHologramCanvas() {
+      const canvas = document.getElementById('hologramCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h;
+
+      function resize() {
+        w = canvas.width = canvas.parentElement.clientWidth;
+        h = canvas.height = canvas.parentElement.clientHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const particleCount = 70;
+      const particles = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          angle: Math.random() * Math.PI * 2,
+          radius: 35 + Math.random() * 85,
+          speed: 0.006 + Math.random() * 0.012,
+          yOffset: (Math.random() - 0.5) * 50,
+          size: Math.random() * 2.2 + 0.8,
+          color: Math.random() > 0.4 ? 'rgba(0, 240, 255, ' : 'rgba(168, 85, 247, '
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        const cx = w / 2;
+        const cy = h / 2;
+
+        // Draw central pulsing ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, 60, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Draw particles in rotating orbit
+        particles.forEach(p => {
+          p.angle += p.speed;
+          const x = cx + Math.cos(p.angle) * p.radius;
+          const y = cy + Math.sin(p.angle) * (p.radius * 0.45) + p.yOffset;
+          const alpha = 0.3 + 0.5 * Math.sin(p.angle);
+
+          ctx.beginPath();
+          ctx.arc(x, y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.color + alpha + ')';
+          ctx.fill();
+
+          // Connect nearby dots
+          if (Math.random() > 0.94) {
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
+            ctx.stroke();
+          }
+        });
+
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    /* =====================================================================
+       4. INTERACTIVE AGENT CONTROLLER & MODAL LOGIC
+    ===================================================================== */
+    function launchAgent(deptKey, initialQuery = null) {
+      activeDeptKey = deptKey;
+      const dept = DEPARTMENTS[deptKey];
+      if (!dept) return;
+
+      // Highlight active card on main UI
+      document.querySelectorAll('.dept-card').forEach(c => c.classList.remove('selected'));
+      const activeCard = document.getElementById(`card-${deptKey}`);
+      if (activeCard) activeCard.classList.add('selected');
+
+      // Populate terminal header
+      document.getElementById('agentHexId').innerText = dept.id;
+      document.getElementById('agentTitle').innerText = dept.title;
+      document.getElementById('agentSubtitle').innerText = dept.sub;
+
+      // Populate chips
+      const chipsContainer = document.getElementById('agentChips');
+      chipsContainer.innerHTML = '';
+      dept.chips.forEach(chipText => {
+        const chip = document.createElement('div');
+        chip.className = 'preset-chip';
+        chip.innerText = chipText;
+        chip.onclick = () => {
+          document.getElementById('terminalInput').value = chipText;
+          sendTerminalPrompt();
+        };
+        chipsContainer.appendChild(chip);
+      });
+
+      // Clear or seed chat history
+      const log = document.getElementById('terminalLog');
+      log.innerHTML = '';
+      appendBotMessage(dept.greeting);
+
+      if (initialQuery) {
+        setTimeout(() => {
+          appendUserMessage(initialQuery);
+          const response = dept.respond(initialQuery);
+          setTimeout(() => {
+            appendBotMessage(response);
+          }, 400);
+        }, 300);
+      }
+
+      // Open terminal modal
+      document.getElementById('terminalOverlay').classList.add('open');
+      document.getElementById('terminalInput').focus();
+    }
+
+    function closeTerminal() {
+      document.getElementById('terminalOverlay').classList.remove('open');
+      window.speechSynthesis.cancel();
+      stopVoiceListening();
+    }
+
+    function appendUserMessage(text) {
+      const log = document.getElementById('terminalLog');
+      const msg = document.createElement('div');
+      msg.className = 'chat-bubble user';
+      msg.innerHTML = `
+        <div class="bubble-sender">OPERATOR COMMANDER ◈</div>
+        <div class="bubble-content">${escapeHTML(text)}</div>
+      `;
+      log.appendChild(msg);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function appendBotMessage(markdownText) {
+      const dept = DEPARTMENTS[activeDeptKey];
+      const log = document.getElementById('terminalLog');
+      const msg = document.createElement('div');
+      msg.className = 'chat-bubble bot';
+      
+      const formattedHTML = formatMarkdown(markdownText);
+      msg.innerHTML = `
+        <div class="bubble-sender">${dept.name} ◈ VERIFIED INTELLIGENCE</div>
+        <div class="bubble-content">${formattedHTML}</div>
+      `;
+      log.appendChild(msg);
+      log.scrollTop = log.scrollHeight;
+
+      sessionTurns++;
+      document.getElementById('turnCounter').innerText = sessionTurns;
+
+      if (isVoiceSpeechEnabled) {
+        speakResponse(markdownText);
+      }
+    }
+
+    function sendTerminalPrompt() {
+      const input = document.getElementById('terminalInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      appendUserMessage(query);
+      input.value = '';
+
+      const dept = DEPARTMENTS[activeDeptKey];
+      setTimeout(() => {
+        const response = dept.respond(query);
+        appendBotMessage(response);
+      }, 450);
+    }
+
+    function handleInputKey(e) {
+      if (e.key === 'Enter') {
+        sendTerminalPrompt();
+      }
+    }
+
+    function formatMarkdown(text) {
+      let out = text
+        .replace(/### (.*?)\n/g, '<h4 style="font-family:var(--font-hud); color:var(--cyan-bright); margin:6px 0;">$1</h4>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+      
+      out = out.replace(/```([a-z]*)\n([\s\S]*?)```/g, function(match, lang, code) {
+        return `<pre><code>${escapeHTML(code.trim())}</code></pre>`;
+      });
+
+      return out.replace(/\n/g, '<br>');
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    /* =====================================================================
+       5. SPEECH SYNTHESIS (VOICE OUTPUT)
+    ===================================================================== */
+    function speakResponse(rawText) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel(); // Stop prior speech
+
+      // Clean markdown tags for natural speech flow
+      let speechClean = rawText
+        .replace(/```[\s\S]*?```/g, "Code block provided in terminal.")
+        .replace(/[`#*_>\[\]]/g, "")
+        .replace(/\n+/g, " ");
+
+      const utterance = new SpeechSynthesisUtterance(speechClean);
+      utterance.rate = 1.05;
+      utterance.pitch = 0.95;
+
+      // Select an English voice if present
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+      if (preferred) utterance.voice = preferred;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleVoiceSpeech() {
+      isVoiceSpeechEnabled = !isVoiceSpeechEnabled;
+      const btn = document.getElementById('ttsToggle');
+      if (isVoiceSpeechEnabled) {
+        btn.classList.add('on');
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg> Voice: ON`;
+      } else {
+        btn.classList.remove('on');
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"></line><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg> Voice: MUTED`;
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    /* =====================================================================
+       6. WEB SPEECH RECOGNITION (VOICE INPUT)
+    ===================================================================== */
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.warn("Speech recognition is not natively supported in this browser.");
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        isSpeechRecognitionActive = true;
+        setMicUIRecording(true);
+      };
+
+      recognition.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        console.log("Transcribed speech:", transcript);
+        
+        // If modal is open, inject directly
+        if (document.getElementById('terminalOverlay').classList.contains('open')) {
+          document.getElementById('terminalInput').value = transcript;
+          sendTerminalPrompt();
+        } else {
+          // Open terminal with appropriate agent
+          let target = '01';
+          const lower = transcript.toLowerCase();
+          if (lower.includes("code") || lower.includes("python") || lower.includes("bug")) target = '02';
+          else if (lower.includes("business") || lower.includes("proposal") || lower.includes("client")) target = '03';
+          else if (lower.includes("research") || lower.includes("paper")) target = '04';
+          else if (lower.includes("schedule") || lower.includes("task") || lower.includes("life")) target = '05';
+          else if (lower.includes("data") || lower.includes("chart")) target = '06';
+
+          launchAgent(target, transcript);
+        }
+      };
+
+      recognition.onerror = (e) => {
+        console.error("Speech Recognition Error:", e.error);
+        stopVoiceListening();
+      };
+
+      recognition.onend = () => {
+        stopVoiceListening();
+      };
+    }
+
+    function triggerGlobalVoiceInput() {
+      if (!recognition) {
+        initSpeechRecognition();
+      }
+      if (!recognition) {
+        alert("Microphone recognition requires a Chromium browser (Chrome, Edge, Brave) with microphone permissions enabled.");
+        return;
+      }
+
+      if (isSpeechRecognitionActive) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch(err) {
+          console.warn("Recognition already started or busy:", err);
+        }
+      }
+    }
+
+    function toggleTerminalVoiceInput() {
+      triggerGlobalVoiceInput();
+    }
+
+    function setMicUIRecording(isRecording) {
+      const giantBtn = document.getElementById('giantTalkBtn');
+      const sideMic = document.getElementById('sidebarMic');
+      const termMic = document.getElementById('termMicBtn');
+      const sideStatus = document.getElementById('sideMicStatus');
+      const giantSub = document.getElementById('giantTalkSub');
+
+      if (isRecording) {
+        if (giantBtn) giantBtn.classList.add('recording');
+        if (sideMic) sideMic.classList.add('listening');
+        if (termMic) termMic.classList.add('active');
+        if (sideStatus) sideStatus.innerText = "RECORDING NOW";
+        if (giantSub) giantSub.innerText = "Listening to your voice... Speak your question now";
+      } else {
+        if (giantBtn) giantBtn.classList.remove('recording');
+        if (sideMic) sideMic.classList.remove('listening');
+        if (termMic) termMic.classList.remove('active');
+        if (sideStatus) sideStatus.innerText = "Listening...";
+        if (giantSub) giantSub.innerText = "I am listening... Click to initiate conversation";
+      }
+    }
+
+    function stopVoiceListening() {
+      isSpeechRecognitionActive = false;
+      setMicUIRecording(false);
+    }
+
+    /* =====================================================================
+       7. HUD UTILITIES & ACTIONS
+    ===================================================================== */
+    function deliverExecutiveBriefing() {
+      const summary = "Executive Briefing for Operator Commander. All six AI departments are fully operational. CPU is operating at 16% load with nominal temperatures. Groq Llama-3 and Claude 3.5 LLM endpoints are verified ultra-fast. You have an upcoming design review at 2 PM and zero critical anomalies detected across your data pipeline.";
+      launchAgent('05', 'Generate comprehensive executive daily briefing');
+      speakResponse(summary);
+    }
+
+    function toggleFocusMode() {
+      const isFocused = document.body.classList.toggle('focus-active');
+      if (isFocused) {
+        alert("Focus Mode Activated: Non-critical telemetry paused. High-priority agents standing by.");
+      } else {
+        alert("Focus Mode Deactivated: Standard HUD telemetry restored.");
+      }
+    }
+
+    function makeActiveNav(el) {
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function changeTheme(themeName) {
+      document.body.setAttribute('data-theme', themeName);
+    }
+
+    /* =====================================================================
+       8. SYSTEM BOOTSTRAP
+    ===================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      initRealtimeClock();
+      initDynamicGauges();
+      initHologramCanvas();
+      initSpeechRecognition();
+    });
+  </script>
+</body>
+</html>
